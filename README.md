@@ -59,21 +59,21 @@ Quick Start
 Project Structure
 -----------------
 
--   `accounts/` â€“ custom user model, roles, profiles, auth forms, password reset.
+-   `accounts/` “ custom user model, roles, profiles, auth forms, password reset.
 -   `articles/`
-    -   `models.py` â€“ Category, Article, reactions, bookmarks, comments.
-    -   `views.py` â€“ Feed, detail, category/author listings, moderation, bookmarks.
-    -   `forms.py` â€“ Article creation with moderation awareness, comment form.
+    -   `models.py` “ Category, Article, reactions, bookmarks, comments.
+    -   `views.py` “ Feed, detail, category/author listings, moderation, bookmarks.
+    -   `forms.py` “ Article creation with moderation awareness, comment form.
     -   `management/commands/seed_demo_content.py` â€“ Demo seed script (covers, comments, reactions, bookmarks).
--   `templates/` â€“ Dark themed UI with shared `page_hero` include and React-style interactions using vanilla JS.
--   `static/css/style.css` â€“ Reddit-inspired styling, gradients, hero themes.
+-   `templates/` “ Dark themed UI with shared `page_hero` include and React-style interactions using vanilla JS.
+-   `static/css/style.css` “ Reddit-inspired styling, gradients, hero themes.
 -   `static/js/`
-    -   `password-toggle.js` â€“ toggles password visibility.
-    -   `reactions.js` â€“ optimistic like/dislike updates with fetch + session storage.
-    -   `comments.js` / `layout.js` â€“ comment interactions, profile dropdown.
--   `main.py` â€“ ASGI entrypoint for Uvicorn.
--   `config/` â€“ Project settings/urls.
--   `requirements.txt` â€“ Django, Pillow, Requests, Uvicorn (standard), WhiteNoise.
+    -   `password-toggle.js` “ toggles password visibility.
+    -   `reactions.js` “ optimistic like/dislike updates with fetch + session storage.
+    -   `comments.js` / `layout.js` “ comment interactions, profile dropdown.
+-   `main.py` “ ASGI entrypoint for Uvicorn.
+-   `config/` “ Project settings/urls.
+-   `requirements.txt` “ Django, Pillow, Requests, Uvicorn (standard), WhiteNoise.
 
 Feature Overview
 ----------------
@@ -94,11 +94,11 @@ Environment Variables
 
 `config/settings.py` uses defaults suitable for development. Override via environment variables or `.env`:
 
--   `DJANGO_SECRET_KEY` â€“ set for production.
--   `DJANGO_DEBUG` â€“ `"false"` to disable debug.
--   `DJANGO_ALLOWED_HOSTS` â€“ comma-separated hosts.
--   `EMAIL_BACKEND`, `EMAIL_HOST`, etc. â€“ configure SMTP if replacing console backend.
--   `DATABASE_URL` â€“ use `dj-database-url` or similar if adopting Postgres/MySQL.
+-   `DJANGO_SECRET_KEY` “ set for production.
+-   `DJANGO_DEBUG` “ `"false"` to disable debug.
+-   `DJANGO_ALLOWED_HOSTS` “ comma-separated hosts.
+-   `EMAIL_BACKEND`, `EMAIL_HOST`, etc. “ configure SMTP if replacing console backend.
+-   `DATABASE_URL` “ use `dj-database-url` or similar if adopting Postgres/MySQL.
 
 Deployment Notes
 ----------------
