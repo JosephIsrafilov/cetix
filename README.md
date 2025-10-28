@@ -1,9 +1,8 @@
 Cetix
-=====
 
 Habr-inspired Django platform for publishing curated engineering articles with moderation workflow, role-based permissions, comments, reactions, bookmarks, and a sleek Reddit-esque dark theme.
 
-Screenshots
+Site Overall
 -----------
 
 -   Home feed with spotlight hero and stat chips
@@ -13,10 +12,9 @@ Screenshots
 Requirements
 ------------
 
--   Python� 3.12
+-   Python 3.12
 -   pip / virtualenv
 -   SQLite (bundled) -- or configure your own database via `DATABASES`
--   Git (optional but recommended)
 
 Quick Start
 -----------
@@ -42,7 +40,7 @@ Quick Start
 4.  **Apply migrations and seed demo data**
 
         python manage.py migrate
-        python manage.py seed_demo_content --flush-existing  # optional sample data
+        python manage.py seed_demo_content --flush-existing  #sample data for project
 
 5.  **Create a superuser (optional but useful)**
 
@@ -61,21 +59,21 @@ Quick Start
 Project Structure
 -----------------
 
--   `accounts/` – custom user model, roles, profiles, auth forms, password reset.
+-   `accounts/` â€“ custom user model, roles, profiles, auth forms, password reset.
 -   `articles/`
-    -   `models.py` – Category, Article, reactions, bookmarks, comments.
-    -   `views.py` – Feed, detail, category/author listings, moderation, bookmarks.
-    -   `forms.py` – Article creation with moderation awareness, comment form.
-    -   `management/commands/seed_demo_content.py` – Demo seed script (covers, comments, reactions, bookmarks).
--   `templates/` – Dark themed UI with shared `page_hero` include and React-style interactions using vanilla JS.
--   `static/css/style.css` – Reddit-inspired styling, gradients, hero themes.
+    -   `models.py` â€“ Category, Article, reactions, bookmarks, comments.
+    -   `views.py` â€“ Feed, detail, category/author listings, moderation, bookmarks.
+    -   `forms.py` â€“ Article creation with moderation awareness, comment form.
+    -   `management/commands/seed_demo_content.py` â€“ Demo seed script (covers, comments, reactions, bookmarks).
+-   `templates/` â€“ Dark themed UI with shared `page_hero` include and React-style interactions using vanilla JS.
+-   `static/css/style.css` â€“ Reddit-inspired styling, gradients, hero themes.
 -   `static/js/`
-    -   `password-toggle.js` – toggles password visibility.
-    -   `reactions.js` – optimistic like/dislike updates with fetch + session storage.
-    -   `comments.js` / `layout.js` – comment interactions, profile dropdown.
--   `main.py` – ASGI entrypoint for Uvicorn.
--   `config/` – Project settings/urls.
--   `requirements.txt` – Django, Pillow, Requests, Uvicorn (standard), WhiteNoise.
+    -   `password-toggle.js` â€“ toggles password visibility.
+    -   `reactions.js` â€“ optimistic like/dislike updates with fetch + session storage.
+    -   `comments.js` / `layout.js` â€“ comment interactions, profile dropdown.
+-   `main.py` â€“ ASGI entrypoint for Uvicorn.
+-   `config/` â€“ Project settings/urls.
+-   `requirements.txt` â€“ Django, Pillow, Requests, Uvicorn (standard), WhiteNoise.
 
 Feature Overview
 ----------------
@@ -88,7 +86,7 @@ Feature Overview
 -   **Auth Experience**: custom registration, login, profile editor, console email password reset, password visibility toggles.
 -   **Seed Data**: optional command generates 15+ articles with cover images, interactions, and demo users.
 -   **Dark, Reddit-like UI**: gradient heroes, stat chips, redesigned cards, responsive layout.
--   **ASGI**: served via Django’s ASGI (through `main.py`) – works with Uvicorn/Gunicorn+Uvloop.
+-   **ASGI**: served via Djangoâ€™s ASGI (through `main.py`) â€“ works with Uvicorn/Gunicorn+Uvloop.
 -   **Static Files**: WhiteNoise integrated; fallback cover images per category (Unsplash links).
 
 Environment Variables
@@ -96,11 +94,11 @@ Environment Variables
 
 `config/settings.py` uses defaults suitable for development. Override via environment variables or `.env`:
 
--   `DJANGO_SECRET_KEY` – set for production.
--   `DJANGO_DEBUG` – `"false"` to disable debug.
--   `DJANGO_ALLOWED_HOSTS` – comma-separated hosts.
--   `EMAIL_BACKEND`, `EMAIL_HOST`, etc. – configure SMTP if replacing console backend.
--   `DATABASE_URL` – use `dj-database-url` or similar if adopting Postgres/MySQL.
+-   `DJANGO_SECRET_KEY` â€“ set for production.
+-   `DJANGO_DEBUG` â€“ `"false"` to disable debug.
+-   `DJANGO_ALLOWED_HOSTS` â€“ comma-separated hosts.
+-   `EMAIL_BACKEND`, `EMAIL_HOST`, etc. â€“ configure SMTP if replacing console backend.
+-   `DATABASE_URL` â€“ use `dj-database-url` or similar if adopting Postgres/MySQL.
 
 Deployment Notes
 ----------------
@@ -127,9 +125,5 @@ Contributing
 4.  Run tests (and add new ones).
 5.  Submit a pull request describing changes/screenshots.
 
-License
--------
-
-MIT License. Free for your own projects—attribute if you ship enhancements! 
 
 
