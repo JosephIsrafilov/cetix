@@ -1,3 +1,5 @@
+from urllib.parse import quote_plus
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
@@ -24,6 +26,9 @@ class User(AbstractUser):
         default=ROLE_USER,
     )
     is_banned = models.BooleanField(default=False)
+    bio = models.TextField(blank=True)
+    website = models.URLField(blank=True)
+    avatar = models.ImageField(upload_to="avatars/", blank=True, null=True)
 
     def save(self, *args, **kwargs):
         update_fields = kwargs.get("update_fields")
@@ -69,6 +74,15 @@ class User(AbstractUser):
         self.is_banned = False
         self.is_active = True
         self.save(update_fields=["is_banned", "is_active"])
+
+    def get_avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        seed = (self.first_name or self.username or "User").strip() or "User"
+        return (
+            "https://ui-avatars.com/api/?background=1d2533&color=ffffff&name="
+            f"{quote_plus(seed[:24])}"
+        )
 
 
 class PasswordResetCode(models.Model):

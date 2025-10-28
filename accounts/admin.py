@@ -7,6 +7,7 @@ from .models import PasswordResetCode, User
 @admin.register(User)
 class UserAdmin(DjangoUserAdmin):
     fieldsets = DjangoUserAdmin.fieldsets + (
+        ("Profile", {"fields": ("bio", "website", "avatar")} ),
         ("Roles & Status", {"fields": ("role", "is_banned")}),
     )
     list_display = (

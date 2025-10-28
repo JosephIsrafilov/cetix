@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, F, Q
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
@@ -35,12 +35,14 @@ class ArticleListView(ListView):
                 total_likes=Count(
                     "reactions",
                     filter=Q(reactions__value=ArticleReaction.VALUE_LIKE),
+                    distinct=True,
                 ),
                 total_dislikes=Count(
                     "reactions",
                     filter=Q(reactions__value=ArticleReaction.VALUE_DISLIKE),
+                    distinct=True,
                 ),
-                comment_count=Count("comments"),
+                comment_count=Count("comments", distinct=True),
             )
             .annotate(net_score=F("total_likes") - F("total_dislikes"))
             .order_by("-net_score", "-published_at", "-created_at")
@@ -274,7 +276,7 @@ class CategoryArticleListView(ListView):
                     "reactions",
                     filter=Q(reactions__value=ArticleReaction.VALUE_DISLIKE),
                 ),
-                comment_count=Count("comments"),
+                comment_count=Count("comments", distinct=True),
             )
             .annotate(net_score=F("total_likes") - F("total_dislikes"))
         )
@@ -320,12 +322,14 @@ class AuthorDetailView(DetailView):
                 total_likes=Count(
                     "reactions",
                     filter=Q(reactions__value=ArticleReaction.VALUE_LIKE),
+                    distinct=True,
                 ),
                 total_dislikes=Count(
                     "reactions",
                     filter=Q(reactions__value=ArticleReaction.VALUE_DISLIKE),
+                    distinct=True,
                 ),
-                comment_count=Count("comments"),
+                comment_count=Count("comments", distinct=True),
             )
             .annotate(net_score=F("total_likes") - F("total_dislikes"))
         )
@@ -341,6 +345,21 @@ class BookmarkListView(LoginRequiredMixin, ListView):
         return (
             Bookmark.objects.filter(user=self.request.user)
             .select_related("article", "article__author", "article__category")
+            .annotate(
+                total_likes=Count(
+                    "article__reactions",
+                    filter=Q(article__reactions__value=ArticleReaction.VALUE_LIKE),
+                    distinct=True,
+                ),
+                total_dislikes=Count(
+                    "article__reactions",
+                    filter=Q(
+                        article__reactions__value=ArticleReaction.VALUE_DISLIKE
+                    ),
+                    distinct=True,
+                ),
+                comment_count=Count("article__comments", distinct=True),
+            )
             .order_by("-created_at")
         )
 
@@ -367,17 +386,30 @@ class ToggleReactionView(LoginRequiredMixin, View):
         obj, created = ArticleReaction.objects.get_or_create(
             article=article, user=request.user, defaults={"value": reaction}
         )
+        user_value = reaction
         if not created:
             if obj.value == reaction:
                 obj.delete()
-                messages.info(request, "Reaction removed.")
+                user_value = None
             else:
                 obj.value = reaction
                 obj.save(update_fields=["value"])
-                messages.success(request, "Reaction updated.")
-        else:
-            messages.success(request, "Reaction added.")
-        return HttpResponseRedirect(article.get_absolute_url())
+        likes = article.likes_count
+        dislikes = article.dislikes_count
+        score = likes - dislikes
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest" or "application/json" in request.headers.get(
+            "Accept", ""
+        ):
+            return JsonResponse(
+                {
+                    "reaction": user_value,
+                    "likes": likes,
+                    "dislikes": dislikes,
+                    "score": score,
+                }
+            )
+        redirect_url = f"{article.get_absolute_url()}#engage"
+        return HttpResponseRedirect(redirect_url)
 
 
 class ArticleCommentCreateView(LoginRequiredMixin, View):
@@ -391,13 +423,13 @@ class ArticleCommentCreateView(LoginRequiredMixin, View):
                 parent = article.comments.filter(pk=parent_id).first()
                 if parent and parent.parent_id:
                     parent = parent.parent
-            ArticleComment.objects.create(
+            new_comment = ArticleComment.objects.create(
                 article=article,
                 user=request.user,
                 parent=parent,
                 body=form.cleaned_data["body"],
             )
-            messages.success(request, "Comment posted.")
+            redirect_url = f"{article.get_absolute_url()}#comment-{new_comment.pk}"
         else:
-            messages.error(request, "Unable to submit comment. Please fix the errors.")
-        return HttpResponseRedirect(article.get_absolute_url())
+            redirect_url = f"{article.get_absolute_url()}#comments"
+        return HttpResponseRedirect(redirect_url)

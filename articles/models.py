@@ -4,6 +4,16 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 
+
+CATEGORY_FALLBACK_COVERS = {
+    "Backend": "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+    "Frontend": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
+    "AI": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
+    "Cyber Security": "https://images.unsplash.com/photo-1510511459019-5dda7724fd87",
+    "Cyber Sport": "https://images.unsplash.com/photo-1511512578047-dfb367046420",
+    "Game Development": "https://images.unsplash.com/photo-1511511773361-7e09e79b4efe",
+}
+
 User = settings.AUTH_USER_MODEL
 
 
@@ -50,7 +60,8 @@ class Article(models.Model):
     category = models.ForeignKey(
         Category, on_delete=models.PROTECT, related_name="articles"
     )
-    cover_image = models.ImageField(upload_to="covers/")
+    cover_image = models.ImageField(upload_to="covers/", blank=True)
+    external_cover_url = models.URLField(blank=True)
     content = models.TextField()
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING
@@ -131,6 +142,18 @@ class Article(models.Model):
     @property
     def score(self) -> int:
         return self.likes_count - self.dislikes_count
+
+    def get_cover_url(self) -> str | None:
+        if self.external_cover_url:
+            return self.external_cover_url
+        if self.cover_image:
+            return self.cover_image.url
+        category_name = getattr(self.category, "name", None)
+        if category_name:
+            fallback_base = CATEGORY_FALLBACK_COVERS.get(category_name)
+            if fallback_base:
+                return f"{fallback_base}?auto=format&fit=crop&w=1400&q=80"
+        return None
 
 
 class ArticleReaction(models.Model):

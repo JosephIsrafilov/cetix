@@ -24,6 +24,12 @@ class ArticleAdmin(admin.ModelAdmin):
     search_fields = ("title", "author__username", "author__email")
     prepopulated_fields = {"slug": ("title",)}
     autocomplete_fields = ("author", "category", "last_moderated_by")
+    fieldsets = (
+        (None, {"fields": ("title", "slug", "author", "category", "status")}),
+        ("Media", {"fields": ("cover_image", "external_cover_url")}),
+        ("Content", {"fields": ("content",)}),
+        ("Moderation", {"fields": ("last_moderated_by", "last_moderated_at")}),
+    )
     ordering = ("-created_at",)
 
 

@@ -1,0 +1,37 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Profile - Cetix{% endblock %}
+
+{% block content %}
+<div class="card profile-card">
+    <h2>Your Profile</h2>
+    <p class="meta">Update your details and avatar.</p>
+    <form method="post" enctype="multipart/form-data" class="profile-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="profile-grid">
+            <div class="profile-avatar-field">
+                <label for="id_avatar">Avatar</label>
+                {% if user.avatar %}
+                    <img class="profile-avatar-preview" src="{{ user.avatar.url }}" alt="{{ user.username }}">
+                {% else %}
+                    <img class="profile-avatar-preview" src="{{ user.get_avatar_url }}" alt="{{ user.username }}">
+                {% endif %}
+                {{ form.avatar }}
+            </div>
+            <div class="profile-fields">
+                {% for field in form %}
+                    {% if field.name != 'avatar' %}
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <p class="message error">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <button type="submit" class="button primary">Save changes</button>
+    </form>
+</div>
+{% endblock %}

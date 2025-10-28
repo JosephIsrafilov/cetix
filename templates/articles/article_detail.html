@@ -1,14 +1,21 @@
 {% extends "base.html" %}
+{% load humanize %}
 
-{% block title %}{{ article.title }} - PC News{% endblock %}
+{% block title %}{{ article.title }} - Cetix{% endblock %}
 
 {% block content %}
 <article class="card article-detail">
     <div class="detail-header">
         <h1>{{ article.title }}</h1>
         <div class="meta detail-meta">
-            <a href="{% url 'articles:author_detail' article.author.username %}">{{ article.author.username }}</a>
-            <span>{{ article.published_at|default:article.created_at|date:"M d, Y H:i" }}</span>
+            <a href="{% url 'articles:author_detail' article.author.username %}">u/{{ article.author.username }}</a>
+            <span class="meta-divider">&middot;</span>
+            {% with stamp=article.published_at|default:article.created_at %}
+                <time datetime="{{ stamp|date:"c" }}" title="{{ stamp|date:"M j, Y H:i" }}">
+                    {{ stamp|naturaltime }}
+                </time>
+            {% endwith %}
+            <span class="meta-divider">&middot;</span>
             <a class="badge" href="{% url 'articles:category_detail' article.category.slug %}">{{ article.category.name }}</a>
         </div>
     </div>
@@ -17,11 +24,13 @@
             Status: {{ article.get_status_display }}. Not visible publicly until moderation finishes.
         </div>
     {% endif %}
-    {% if article.cover_image %}
-        <div class="cover-frame">
-            <img class="article-cover" src="{{ article.cover_image.url }}" alt="{{ article.title }}">
-        </div>
-    {% endif %}
+    {% with cover=article.get_cover_url %}
+        {% if cover %}
+            <div class="cover-frame">
+                <img class="article-cover" src="{{ cover }}" alt="{{ article.title }}">
+            </div>
+        {% endif %}
+    {% endwith %}
     <div class="article-content">
         {{ article.content|linebreaks }}
     </div>
@@ -33,18 +42,21 @@
     {% endif %}
 </article>
 
-<section class="card engage-card">
+<section id="engage" class="card engage-card">
     <h3>Engage with this article</h3>
-    <p class="rating-summary">
-        Score {{ article.score }} · 👍 {{ article.likes_count }} · 👎 {{ article.dislikes_count }} · 💬 {{ comments_count }}
-    </p>
+    <div class="stats-row rating-summary" data-article-stats="{{ article.slug }}">
+        <span class="stat-chip" data-stat="score"><strong>{{ article.score }}</strong> score</span>
+        <span class="stat-chip" data-stat="likes"><strong>{{ article.likes_count }}</strong> upvotes</span>
+        <span class="stat-chip" data-stat="dislikes"><strong>{{ article.dislikes_count }}</strong> downvotes</span>
+        <span class="stat-chip" data-stat="comments"><strong>{{ comments_count }}</strong> comments</span>
+    </div>
     {% if user.is_authenticated %}
-        <div class="article-actions">
-            <form method="post" action="{% url 'articles:toggle_reaction' article.slug 'like' %}">
+        <div class="article-actions" data-reaction-group>
+            <form class="reaction-form" data-article="{{ article.slug }}" data-reaction="like" method="post" action="{% url 'articles:toggle_reaction' article.slug 'like' %}">
                 {% csrf_token %}
                 <button type="submit" class="button {% if user_reaction and user_reaction.value == 'like' %}active{% endif %}">Like</button>
             </form>
-            <form method="post" action="{% url 'articles:toggle_reaction' article.slug 'dislike' %}">
+            <form class="reaction-form" data-article="{{ article.slug }}" data-reaction="dislike" method="post" action="{% url 'articles:toggle_reaction' article.slug 'dislike' %}">
                 {% csrf_token %}
                 <button type="submit" class="button {% if user_reaction and user_reaction.value == 'dislike' %}active{% endif %}">Dislike</button>
             </form>
@@ -68,38 +80,58 @@
     {% endif %}
 </section>
 
-<section class="card comments-card">
-    <h3>Comments ({{ comments_count }})</h3>
+<section id="comments" class="card comments-card">
+    <div class="comments-header">
+        <h3>Comments</h3>
+        <span class="comment-count">{{ comments_count }}</span>
+    </div>
     {% if top_level_comments %}
-        <ul class="comment-list">
+        <ul class="comment-thread">
             {% for comment in top_level_comments %}
-                <li class="comment-item">
-                    <div class="comment-meta">
-                        <strong>{{ comment.user.username }}</strong>
-                        <span>{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                <li class="comment-block" id="comment-{{ comment.id }}">
+                    <span class="comment-avatar">{{ comment.user.first_name|default:comment.user.username|first|upper }}</span>
+                    <div class="comment-main">
+                        <header class="comment-meta">
+                            <strong class="comment-author">{{ comment.user.username }}</strong>
+                            <span class="comment-time">{{ comment.created_at|naturaltime }}</span>
+                        </header>
+                        <div class="comment-body">{{ comment.body|linebreaks }}</div>
+                        <footer class="comment-footer">
+                            <div class="comment-actions">
+                                <button type="button" class="comment-vote" data-direction="up" title="Upvote">&uarr;</button>
+                                <button type="button" class="comment-vote" data-direction="down" title="Downvote">&darr;</button>
+                                {% if user.is_authenticated %}
+                                    <button type="button" class="comment-reply-button" data-target="reply-form-{{ comment.id }}">Reply</button>
+                                {% endif %}
+                            </div>
+                        </footer>
+                        {% if user.is_authenticated %}
+                            <form class="reply-form hidden" id="reply-form-{{ comment.id }}" method="post" action="{% url 'articles:comment_create' article.slug %}">
+                                {% csrf_token %}
+                                <textarea name="body" rows="2" class="comment-textarea" placeholder="Reply to {{ comment.user.username }}"></textarea>
+                                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                <button type="submit" class="button secondary">Post reply</button>
+                            </form>
+                        {% endif %}
+                        {% with replies=comment.replies.all %}
+                            {% if replies %}
+                                <ul class="comment-children">
+                                    {% for reply in replies %}
+                                        <li class="comment-block" id="comment-{{ reply.id }}">
+                                            <span class="comment-avatar small">{{ reply.user.first_name|default:reply.user.username|first|upper }}</span>
+                                            <div class="comment-main">
+                                                <header class="comment-meta">
+                                                    <strong class="comment-author">{{ reply.user.username }}</strong>
+                                                    <span class="comment-time">{{ reply.created_at|naturaltime }}</span>
+                                                </header>
+                                                <div class="comment-body">{{ reply.body|linebreaks }}</div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
+                        {% endwith %}
                     </div>
-                    <p class="comment-body">{{ comment.body|linebreaks }}</p>
-                    {% if user.is_authenticated %}
-                        <form class="reply-form" method="post" action="{% url 'articles:comment_create' article.slug %}">
-                            {% csrf_token %}
-                            <textarea name="body" rows="2" placeholder="Reply to {{ comment.user.username }}"></textarea>
-                            <input type="hidden" name="parent_id" value="{{ comment.id }}">
-                            <button type="submit" class="button secondary">Reply</button>
-                        </form>
-                    {% endif %}
-                    {% if comment.replies.all %}
-                        <ul class="comment-replies">
-                            {% for reply in comment.replies.all %}
-                                <li class="comment-item">
-                                    <div class="comment-meta">
-                                        <strong>{{ reply.user.username }}</strong>
-                                        <span>{{ reply.created_at|date:"M d, Y H:i" }}</span>
-                                    </div>
-                                    <p class="comment-body">{{ reply.body|linebreaks }}</p>
-                                </li>
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
                 </li>
             {% endfor %}
         </ul>
@@ -108,3 +140,5 @@
     {% endif %}
 </section>
 {% endblock %}
+
+

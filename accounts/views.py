@@ -7,7 +7,7 @@ from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
 from django.http import Http404, HttpResponseRedirect
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import View
@@ -16,6 +16,7 @@ from django.views.generic import CreateView, FormView, ListView, TemplateView
 from .forms import (
     PasswordResetConfirmForm,
     PasswordResetRequestForm,
+    ProfileForm,
     SignUpForm,
 )
 from .mixins import RoleRequiredMixin
@@ -116,9 +117,9 @@ class PasswordResetRequestView(FormView):
                     expires_at=expires_at,
                 )
                 send_mail(
-                    subject="Your PC News password reset code",
+                    subject="Your Cetix password reset code",
                     message=(
-                        "We received a request to reset your PC News password.\n\n"
+                        "We received a request to reset your Cetix password.\n\n"
                         f"Your verification code is: {code}\n"
                         "This code will expire in 15 minutes.\n\n"
                         "If you did not request this, you can ignore this email."
@@ -174,3 +175,19 @@ class PasswordResetConfirmView(FormView):
             "Password updated. You can now log in with your new credentials.",
         )
         return super().form_valid(form)
+
+
+class ProfileView(LoginRequiredMixin, View):
+    template_name = "accounts/profile.html"
+
+    def get(self, request):
+        form = ProfileForm(instance=request.user)
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = ProfileForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated.")
+            return HttpResponseRedirect(request.path)
+        return render(request, self.template_name, {"form": form})

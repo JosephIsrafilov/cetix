@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.humanize',
     'accounts',
     'articles',
 ]
@@ -124,4 +125,4 @@ LOGIN_URL = 'login'
 WHITENOISE_USE_FINDERS = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-DEFAULT_FROM_EMAIL = 'PC News <no-reply@pcnews.local>'
+DEFAULT_FROM_EMAIL = 'Cetix <no-reply@cetix.local>'

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load humanize %}
 
-{% block title %}Latest Articles - PC News{% endblock %}
+{% block title %}Latest Articles - Cetix{% endblock %}
 
 {% block hero %}
 <section class="hero">
@@ -26,19 +27,32 @@
 <h2>Latest Articles</h2>
 <div class="article-grid">
     {% for article in articles %}
-        <article class="card">
+        <article class="card" data-article-card="{{ article.slug }}">
+            {% with cover=article.get_cover_url %}
+                {% if cover %}
+                    <a class="card-cover" href="{{ article.get_absolute_url }}">
+                        <img src="{{ cover }}" alt="{{ article.title }}">
+                    </a>
+                {% endif %}
+            {% endwith %}
             <h3><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3>
             <p class="meta">
-                <span>{{ article.author.username }}</span>
-                <span>{{ article.published_at|date:"M d, Y H:i" }}</span>
-                <span class="badge">{{ article.category.name }}</span>
+                <a href="{% url 'articles:author_detail' article.author.username %}">u/{{ article.author.username }}</a>
+                <span class="meta-divider">&middot;</span>
+                {% with stamp=article.published_at|default:article.created_at %}
+                    <time datetime="{{ stamp|date:"c" }}" title="{{ stamp|date:"M j, Y H:i" }}">
+                        {{ stamp|naturaltime }}
+                    </time>
+                {% endwith %}
+                <span class="meta-divider">&middot;</span>
+                <a class="badge" href="{% url 'articles:category_detail' article.category.slug %}">{{ article.category.name }}</a>
             </p>
-            <p>{{ article.content|truncatewords:50 }}</p>
-            <div class="meta stats-row">
-                <span>Score {{ article.net_score|default:article.score }}</span>
-                <span>👍 {{ article.total_likes|default:article.likes_count }}</span>
-                <span>👎 {{ article.total_dislikes|default:article.dislikes_count }}</span>
-                <span>💬 {{ article.comment_count|default:article.comments.count }}</span>
+            <p>{{ article.content|truncatewords:45 }}</p>
+            <div class="stats-row" data-article-stats="{{ article.slug }}">
+                <span class="stat-chip" data-stat="score"><strong>{{ article.net_score|default:article.score }}</strong> score</span>
+                <span class="stat-chip" data-stat="likes"><strong>{{ article.total_likes|default:article.likes_count }}</strong> upvotes</span>
+                <span class="stat-chip" data-stat="dislikes"><strong>{{ article.total_dislikes|default:article.dislikes_count }}</strong> downvotes</span>
+                <span class="stat-chip" data-stat="comments"><strong>{{ article.comment_count|default:article.comments.count }}</strong> comments</span>
             </div>
             <div class="article-actions">
                 <a class="button secondary" href="{{ article.get_absolute_url }}">Read full article</a>
@@ -61,3 +75,4 @@
     </div>
 {% endif %}
 {% endblock %}
+

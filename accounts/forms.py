@@ -61,3 +61,20 @@ class PasswordResetConfirmForm(forms.Form):
         if not code.isdigit():
             raise forms.ValidationError("Verification code must contain only digits.")
         return code
+
+
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = (
+            "first_name",
+            "last_name",
+            "email",
+            "bio",
+            "website",
+            "avatar",
+        )
+        widgets = {
+            "bio": forms.Textarea(attrs={"rows": 4, "placeholder": "Share a short bio"}),
+            "website": forms.URLInput(attrs={"placeholder": "https://example.com"}),
+        }

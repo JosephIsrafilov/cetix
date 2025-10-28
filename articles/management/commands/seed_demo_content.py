@@ -16,33 +16,34 @@ from articles.models import (
     ArticleReaction,
     Bookmark,
     Category,
+    CATEGORY_FALLBACK_COVERS,
 )
 from PIL import Image, ImageDraw, ImageFont
 
 
 CATEGORY_IMAGE_SOURCES = {
     "Backend": [
-        "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+        CATEGORY_FALLBACK_COVERS["Backend"],
         "https://images.unsplash.com/photo-1517433456452-f9633a875f6f",
     ],
     "Frontend": [
-        "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
+        CATEGORY_FALLBACK_COVERS["Frontend"],
         "https://images.unsplash.com/photo-1454165205744-3b78555e5572",
     ],
     "AI": [
-        "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
+        CATEGORY_FALLBACK_COVERS["AI"],
         "https://images.unsplash.com/photo-1517430816045-df4b7de11d1d",
     ],
     "Cyber Security": [
-        "https://images.unsplash.com/photo-1510511459019-5dda7724fd87",
+        CATEGORY_FALLBACK_COVERS["Cyber Security"],
         "https://images.unsplash.com/photo-1555949963-aa79dcee981c",
     ],
     "Cyber Sport": [
-        "https://images.unsplash.com/photo-1511512578047-dfb367046420",
+        CATEGORY_FALLBACK_COVERS["Cyber Sport"],
         "https://images.unsplash.com/photo-1517649763962-0c623066013b",
     ],
     "Game Development": [
-        "https://images.unsplash.com/photo-1511511773361-7e09e79b4efe",
+        CATEGORY_FALLBACK_COVERS["Game Development"],
         "https://images.unsplash.com/photo-1545239351-1141bd82e8a6",
     ],
 }
@@ -50,7 +51,7 @@ CATEGORY_IMAGE_SOURCES = {
 COMMENT_SNIPPETS = [
     "Loved the detailed explanation around {topic}. We followed a similar playbook last quarter and saw huge wins.",
     "This is the kind of pragmatic write-up I send to my team. Thanks for highlighting the trade-offs.",
-    "Curious how you see this scaling as the organisation grows—still debating the approach in our shop.",
+    "Curious how you see this scaling as the organisation grows--still debating the approach in our shop.",
     "Solid breakdown. The metrics you shared make a great benchmark for us to compare against.",
     "Appreciate the transparency about what went wrong. Too many posts gloss over the painful bits.",
 ]
@@ -65,7 +66,7 @@ ARTICLE_DATA = [
             "Over the past eighteen months our payments platform migrated from a nine-year-old monolith to a constellation of twelve Go services. The biggest architectural risk was our shared Postgres database. Until recently, our strategy hinged on sharding, but Postgres 16 shipped logical replication improvements that gave us a cleaner way to decouple schema ownership.",
             "We began by isolating the event-sourcing pipeline. Each service published domain events into a dedicated schema, while consumers subscribed through logical replication slots. Because replication is asynchronous, we introduced an idempotent write layer to avoid double processing should a slot fall behind during deployments.",
             "The largest surprise involved vacuum pressure. Logical replication retains WAL segments longer than physical replication, so we expanded storage and tuned `max_slot_wal_keep_size`. Without that adjustment the replica lag spiked after a bulk import. We also added auto scaling for the logical subscribers, leveraging KEDA metrics to scale on replication lag.",
-            "The end result is a topology where every domain team owns its schema, yet we still preserve relational guarantees. If you're bracing for a microservice split in 2025, evaluate Postgres 16's logical replication early—it may save months of cross-team coordination."
+            "The end result is a topology where every domain team owns its schema, yet we still preserve relational guarantees. If you're bracing for a microservice split in 2025, evaluate Postgres 16's logical replication early--it may save months of cross-team coordination."
         ],
         "status": "published",
     },
@@ -74,7 +75,7 @@ ARTICLE_DATA = [
         "title": "gRPC vs. Async REST: Choosing the Right Wire Protocol for Internal APIs",
         "summary": "A benchmark-driven comparison of gRPC and modern async REST stacks when latency, observability, and tooling all matter.",
         "body": [
-            "Internal service-to-service calls account for 87% of the traffic inside our infrastructure. We ran a ten-day benchmark comparing our existing REST stack—FastAPI behind Envoy—with a gRPC prototype written in Kotlin. The workload simulated fifty million requests per day with a 90/10 read/write split.",
+            "Internal service-to-service calls account for 87% of the traffic inside our infrastructure. We ran a ten-day benchmark comparing our existing REST stack--FastAPI behind Envoy--with a gRPC prototype written in Kotlin. The workload simulated fifty million requests per day with a 90/10 read/write split.",
             "gRPC delivered a 37% reduction in median latency and cut serialized payload size roughly in half. That matters when you shard across availability zones. However, we underestimated the developer experience gap. JSON payloads are trivial to inspect, but protobuf messages required additional observability tooling and more training during on-call escalations.",
             "Ultimately we adopted a hybrid model. High-volume, low-touch services now expose a gRPC surface, while endpoints that interact with third parties remain REST. The key is documenting ownership boundaries early so teams can converge on a tooling baseline instead of supporting every protocol under the sun."
         ],
@@ -85,7 +86,7 @@ ARTICLE_DATA = [
         "title": "Lessons from Shipping Serverless Batch Jobs on Cloud Run",
         "summary": "Serverless batch looks effortless on slides. Here is the sober list of constraints we hit once workloads crossed 300k executions a day.",
         "body": [
-            "The promise of Cloud Run jobs is seductive—containerized workloads without VM management. We ported our nightly ETL pipeline in two weeks, but production traffic exposed several sharp edges. Cold starts in particular ballooned when the runtime pulled large container images; slimming images to sub-200MB cut average start time by 44%.",
+            "The promise of Cloud Run jobs is seductive--containerized workloads without VM management. We ported our nightly ETL pipeline in two weeks, but production traffic exposed several sharp edges. Cold starts in particular ballooned when the runtime pulled large container images; slimming images to sub-200MB cut average start time by 44%.",
             "Retry semantics proved tricky. Cloud Run marks a job as failed after three retries even if failures were caused by downstream rate limits. Our workaround was to implement compensating logic in Pub/Sub and reschedule jobs rather than relying solely on Cloud Run's retries.",
             "My advice: treat serverless batch like any other production system. Instrument aggressively, version container images, and keep Terraform definitions close to the workloads they control. You give up manual server management but inherit a different set of operational muscles."
         ],
@@ -97,8 +98,8 @@ ARTICLE_DATA = [
         "summary": "A pragmatic blueprint for teams straddling legacy SSR and modern React Server Components without losing accessibility.",
         "body": [
             "Our marketing platform must serve millions of visitors on sub-3G networks. We adopted an 'islands of interactivity' approach built on Astro and React Server Components. Static HTML renders instantly, while interactive islands hydrate progressively based on viewport intersection observers.",
-            "Accessibility was the north star. Instead of polyfilling everything, we rely on semantic HTML and sprinkle enhancements only when the browser reports sufficient capabilities. This dramatically reduced JS bundle size—down to 48KB gzipped for the homepage—and core web vitals improved across the board.",
-            "If you're migrating from a React SPA, resist the temptation to ship a parallel client bundle. Start by identifying components that truly need interactivity, then let the rest render server-side. Your lighthouse score—and your users—will thank you."
+            "Accessibility was the north star. Instead of polyfilling everything, we rely on semantic HTML and sprinkle enhancements only when the browser reports sufficient capabilities. This dramatically reduced JS bundle size--down to 48KB gzipped for the homepage--and core web vitals improved across the board.",
+            "If you're migrating from a React SPA, resist the temptation to ship a parallel client bundle. Start by identifying components that truly need interactivity, then let the rest render server-side. Your lighthouse score--and your users--will thank you."
         ],
         "status": "published",
     },
@@ -109,7 +110,7 @@ ARTICLE_DATA = [
         "body": [
             "Our previous design system relied on Sass variables that drifted across repositories. We centralized tokens in a JSON schema processed by Style Dictionary, emitting platform-specific outputs for web, iOS, and Android. The tricky part was orchestrating updates without breaking consumer apps.",
             "We implemented semantic versioning for the token package and used changesets to track modifications. To minimize regressions, we wired visual regression tests with Chromatic snapshots. The rollout uncovered dozens of inaccessible color combinations that were quietly harming contrast ratios.",
-            "Six weeks later every surface area—from marketing landing pages to the internal admin console—consumes the same token pipeline. The benefits show up in velocity: designers iterate once, and implementation-ready artifacts flow automatically to product teams."
+            "Six weeks later every surface area--from marketing landing pages to the internal admin console--consumes the same token pipeline. The benefits show up in velocity: designers iterate once, and implementation-ready artifacts flow automatically to product teams."
         ],
         "status": "published",
     },
@@ -120,7 +121,7 @@ ARTICLE_DATA = [
         "body": [
             "Data visualization at enterprise scale often hits canvas performance ceilings. We built a prototype using WebGPU via the wgpu native bindings. On a dataset with 1.2 million points, WebGPU rendered aggregations in 8.6ms compared to 32ms on WebGL and over 110ms with SVG.",
             "Of course, WebGPU is still experimental. Driver support remains inconsistent and the learning curve is steep. We mitigated the risk by providing a graceful fallback to canvas rendering whenever WebGPU initialization fails.",
-            "If your audience includes power users on modern browsers, investing in WebGPU today protects your dashboards for the next five years. Just budget time for developer education—thinking in compute shaders is a paradigm shift for most front-end teams."
+            "If your audience includes power users on modern browsers, investing in WebGPU today protects your dashboards for the next five years. Just budget time for developer education--thinking in compute shaders is a paradigm shift for most front-end teams."
         ],
         "status": "pending",
     },
@@ -130,7 +131,7 @@ ARTICLE_DATA = [
         "summary": "How we combined RAG, event streams, and guardrails to ship a reliable AI assistant for SRE runbooks.",
         "body": [
             "RAG alone rarely delivers trustworthy automation. Our SRE assistant fuses retrieval with a policy graph. Each suggested remediation references a concrete runbook step, tracks the originating incident, and requires human confirmation before execution.",
-            "We embedded observability metadata—Grafana dashboards, PagerDuty incidents, and Kibana traces—into a vector store. The assistant retrieves contextual documents, then a rules engine determines whether the action stays advisory or escalates to an automated workflow via Argo Workflows.",
+            "We embedded observability metadata--Grafana dashboards, PagerDuty incidents, and Kibana traces--into a vector store. The assistant retrieves contextual documents, then a rules engine determines whether the action stays advisory or escalates to an automated workflow via Argo Workflows.",
             "The project surfaced ethical questions. We introduced a 'decision ledger' that records every AI suggestion and the human response. This transparency proved essential during postmortems. If you're building AI copilots for ops teams, plan for auditability from day zero."
         ],
         "status": "published",
@@ -196,7 +197,7 @@ ARTICLE_DATA = [
         "summary": "An analytical deep dive into why teams that mastered timeout usage outperformed their seeds.",
         "body": [
             "Timeout usage in Valorant isn't just about calming nerves. Reviewing Masters Tokyo demos, we saw that victorious teams gained an average of 1.7 rounds immediately after a timeout. Coaches used the pause to reset defaults and call audacious site hits that punished aggressive defenders.",
-            "Paper Rex popularized staggered timeout strategies—burning a pause even after a won round to bank tactical momentum. Expect more teams to treat timeouts as chess clocks rather than emergency brakes.",
+            "Paper Rex popularized staggered timeout strategies--burning a pause even after a won round to bank tactical momentum. Expect more teams to treat timeouts as chess clocks rather than emergency brakes.",
             "If you're coaching at any tier, script timeout scenarios into scrims. Players should know exactly which set piece to execute when the coach pushes the pause button."
         ],
         "status": "published",
@@ -206,7 +207,7 @@ ARTICLE_DATA = [
         "title": "The Scouting Stack Behind Tier-One Dota Rosters",
         "summary": "From replay parsers to private AI scrim assistants, modern esports scouting looks a lot like pro sports analytics.",
         "body": [
-            "Top teams ingest terabytes of scrim data weekly. We built a scouting stack combining OpenDota APIs, custom replay parsers, and an internal LLM that surfaces draft anomalies. Analysts query natural language prompts—“show me every offlane Beastmaster timing with Helm rush in patch 7.35”—and get frame-accurate clips.",
+            "Top teams ingest terabytes of scrim data weekly. We built a scouting stack combining OpenDota APIs, custom replay parsers, and an internal LLM that surfaces draft anomalies. Analysts query natural language prompts--“show me every offlane Beastmaster timing with Helm rush in patch 7.35”--and get frame-accurate clips.",
             "Culture change mattered as much as tooling. Coaches shared dashboards with players so they could self-scout between practice blocks. The shared context shortened feedback loops and prevented conflicts over subjective impressions.",
             "If your org still relies on spreadsheets, start automating data collection. Even a lightweight pipeline that tags power spikes can yield competitive edges during playoff prep."
         ],
@@ -260,19 +261,19 @@ ARTICLE_DATA = [
 
 
 AUTHOR_SPECS = [
-    {"username": "alex.kim", "first_name": "Alex", "last_name": "Kim", "email": "alex.kim@pcnews.demo"},
-    {"username": "priya.nair", "first_name": "Priya", "last_name": "Nair", "email": "priya.nair@pcnews.demo"},
-    {"username": "mateo.ferrara", "first_name": "Mateo", "last_name": "Ferrara", "email": "mateo.ferrara@pcnews.demo"},
-    {"username": "sara.chen", "first_name": "Sara", "last_name": "Chen", "email": "sara.chen@pcnews.demo"},
-    {"username": "dmitry.ivanov", "first_name": "Dmitry", "last_name": "Ivanov", "email": "dmitry.ivanov@pcnews.demo"},
-    {"username": "lena.rojas", "first_name": "Lena", "last_name": "Rojas", "email": "lena.rojas@pcnews.demo"},
+    {"username": "alex.kim", "first_name": "Alex", "last_name": "Kim", "email": "alex.kim@cetix.demo"},
+    {"username": "priya.nair", "first_name": "Priya", "last_name": "Nair", "email": "priya.nair@cetix.demo"},
+    {"username": "mateo.ferrara", "first_name": "Mateo", "last_name": "Ferrara", "email": "mateo.ferrara@cetix.demo"},
+    {"username": "sara.chen", "first_name": "Sara", "last_name": "Chen", "email": "sara.chen@cetix.demo"},
+    {"username": "dmitry.ivanov", "first_name": "Dmitry", "last_name": "Ivanov", "email": "dmitry.ivanov@cetix.demo"},
+    {"username": "lena.rojas", "first_name": "Lena", "last_name": "Rojas", "email": "lena.rojas@cetix.demo"},
 ]
 
 
 READER_SPECS = [
-    {"username": "noah.reader", "first_name": "Noah", "last_name": "Reid", "email": "noah.reid@pcnews.demo"},
-    {"username": "amira.reader", "first_name": "Amira", "last_name": "Saleh", "email": "amira.saleh@pcnews.demo"},
-    {"username": "olivia.reader", "first_name": "Olivia", "last_name": "Martens", "email": "olivia.martens@pcnews.demo"},
+    {"username": "noah.reader", "first_name": "Noah", "last_name": "Reid", "email": "noah.reid@cetix.demo"},
+    {"username": "amira.reader", "first_name": "Amira", "last_name": "Saleh", "email": "amira.saleh@cetix.demo"},
+    {"username": "olivia.reader", "first_name": "Olivia", "last_name": "Martens", "email": "olivia.martens@cetix.demo"},
 ]
 
 
@@ -330,7 +331,7 @@ class Command(BaseCommand):
                 },
             )
             if created:
-                user.set_password("pcnews123")
+                user.set_password("cetix123")
                 user.role = role
                 user.is_active = True
                 if role == User.ROLE_ADMIN:
@@ -346,8 +347,12 @@ class Command(BaseCommand):
         return users
 
     def _create_article(self, spec, categories, authors):
-        if Article.objects.filter(title=spec["title"]).exists():
-            self.stdout.write(f"Skipping existing article: {spec['title']}")
+        existing = Article.objects.filter(title=spec["title"]).first()
+        if existing:
+            if self._ensure_article_cover(existing, spec["category"]):
+                self.stdout.write(f"Attached cover image to existing article: {spec['title']}")
+            else:
+                self.stdout.write(f"Skipping existing article: {spec['title']}")
             return None
 
         category = categories[spec["category"]]
@@ -364,7 +369,7 @@ class Command(BaseCommand):
         article.save()
 
         image_content, filename = self._fetch_image(category.name, spec["title"])
-        article.cover_image.save(filename, image_content, save=False)
+        article.cover_image.save(filename, image_content)
 
         if article.status == Article.STATUS_PUBLISHED:
             article.published_at = created_at + timedelta(hours=random.randint(6, 48))
@@ -379,6 +384,16 @@ class Command(BaseCommand):
         )
         article.refresh_from_db()
         return article
+
+    def _ensure_article_cover(self, article, category_name):
+        if article.cover_image or article.external_cover_url:
+            return False
+        fallback_urls = CATEGORY_IMAGE_SOURCES.get(category_name, [])
+        if not fallback_urls:
+            return False
+        article.external_cover_url = f"{fallback_urls[0]}?auto=format&fit=crop&w=1400&q=80"
+        article.save(update_fields=["external_cover_url"])
+        return True
 
     def _fetch_image(self, category_name, title):
         urls = CATEGORY_IMAGE_SOURCES.get(category_name, [])[:]
@@ -403,7 +418,7 @@ class Command(BaseCommand):
 
         font = ImageFont.load_default()
         draw.text((60, height - 200), category_name.upper(), fill=accent_color, font=font)
-        draw.text((60, height - 150), textwrap.shorten(title, width=60, placeholder="…"), fill=(226, 232, 240), font=font)
+        draw.text((60, height - 150), textwrap.shorten(title, width=60, placeholder="..."), fill=(226, 232, 240), font=font)
 
         buffer = BytesIO()
         image.save(buffer, format="JPEG", quality=85)
@@ -449,3 +464,4 @@ class Command(BaseCommand):
                 parent=parent,
                 body=random.choice(COMMENT_SNIPPETS).format(topic=article.category.name.lower()),
             )
+

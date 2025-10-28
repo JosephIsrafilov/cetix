@@ -4,6 +4,7 @@ from .views import (
     PasswordResetConfirmView,
     PasswordResetRequestView,
     PasswordResetRequestedView,
+    ProfileView,
     SignUpView,
     UserBanToggleView,
     UserListView,
@@ -17,6 +18,7 @@ urlpatterns = [
     path("password/forgot/", PasswordResetRequestView.as_view(), name="password_reset_request"),
     path("password/forgot/done/", PasswordResetRequestedView.as_view(), name="password_reset_done"),
     path("password/verify/", PasswordResetConfirmView.as_view(), name="password_reset_verify"),
+    path("profile/", ProfileView.as_view(), name="profile"),
     path("users/", UserListView.as_view(), name="user_list"),
     path("users/<int:pk>/ban/", UserBanToggleView.as_view(), name="user_ban_toggle"),
     path(

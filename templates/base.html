@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>{% block title %}PC News{% endblock %}</title>
+    <title>{% block title %}Cetix{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
@@ -11,8 +11,8 @@
     <header class="site-header">
         <div class="container header-inner">
             <div class="logo-stack">
-                <a class="site-title" href="{% url 'articles:article_list' %}">PC News</a>
-                <span class="site-tagline">Daily insights for developers & makers</span>
+                <a class="site-title" href="{% url 'articles:article_list' %}">Cetix</a>
+                <span class="site-tagline">Deep dives for developers & makers</span>
             </div>
             <nav class="site-nav">
                 <ul class="nav-links">
@@ -31,15 +31,28 @@
             </nav>
             <div class="header-actions">
                 {% if user.is_authenticated %}
-                    <span class="profile-chip">{{ user.username }}</span>
-                    <form class="logout-form" method="post" action="{% url 'logout' %}">
-                        {% csrf_token %}
-                        <button type="submit" class="ghost-link">Logout</button>
-                    </form>
-                    <a class="button primary" href="{% url 'articles:article_create' %}">Write Article</a>
+                    <a class="button secondary" href="{% url 'articles:article_create' %}">Write Post</a>
+                    <div class="profile-menu">
+                        <button class="profile-toggle" type="button" aria-haspopup="true" aria-expanded="false">
+                            <img src="{{ user.get_avatar_url }}" alt="{{ user.username }} avatar">
+                        </button>
+                        <div class="profile-dropdown hidden">
+                            <div class="profile-summary">
+                                <strong>{{ user.username }}</strong>
+                                <span>{{ user.email }}</span>
+                            </div>
+                            <div class="profile-actions">
+                                <a href="{% url 'accounts:profile' %}">Profile</a>
+                                <form method="post" action="{% url 'logout' %}">
+                                    {% csrf_token %}
+                                    <button type="submit">Log out</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 {% else %}
                     <a class="ghost-link" href="{% url 'login' %}">Login</a>
-                    <a class="button primary" href="{% url 'accounts:register' %}">Join PC News</a>
+                    <a class="button primary" href="{% url 'accounts:register' %}">Join Cetix</a>
                 {% endif %}
             </div>
         </div>
@@ -57,7 +70,7 @@
     </main>
     <footer class="site-footer">
         <div class="container footer-inner">
-            <p>&copy; {% now "Y" %} PC News &middot; Crafted for the community.</p>
+            <p>&copy; {% now "Y" %} Cetix &middot; Crafted for the community.</p>
             <p class="footer-links">
                 <a href="{% url 'articles:category_list' %}">Explore topics</a>
                 <a href="{% url 'articles:popular_list' %}">Top stories</a>
@@ -67,5 +80,8 @@
     </footer>
     <script src="{% static 'js/password-toggle.js' %}"></script>
     <script src="{% static 'js/form-enhancements.js' %}"></script>
+    <script src="{% static 'js/comments.js' %}"></script>
+    <script src="{% static 'js/reactions.js' %}"></script>
+    <script src="{% static 'js/layout.js' %}"></script>
 </body>
 </html>

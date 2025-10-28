@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load humanize %}
 
-{% block title %}Moderation Queue - PC News{% endblock %}
+{% block title %}Moderation Queue - Cetix{% endblock %}
 
 {% block content %}
 <h2>Moderation Queue</h2>
@@ -10,8 +11,12 @@
             <div class="card moderation-card">
                 <h3>{{ article.title }}</h3>
                 <p class="meta">
-                    <span>{{ article.author.username }}</span>
-                    <span>{{ article.created_at|date:"M d, Y H:i" }}</span>
+                    <a href="{% url 'articles:author_detail' article.author.username %}">u/{{ article.author.username }}</a>
+                    <span class="meta-divider">&middot;</span>
+                    <time datetime="{{ article.created_at|date:"c" }}" title="{{ article.created_at|date:"M j, Y H:i" }}">
+                        {{ article.created_at|naturaltime }}
+                    </time>
+                    <span class="meta-divider">&middot;</span>
                     <span class="badge">{{ article.category.name }}</span>
                 </p>
                 <div class="article-actions">
@@ -34,3 +39,4 @@
     </div>
 {% endif %}
 {% endblock %}
+

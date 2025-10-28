@@ -1,24 +1,38 @@
 {% extends "base.html" %}
+{% load humanize %}
 
-{% block title %}Bookmarks - PC News{% endblock %}
+{% block title %}Bookmarks - Cetix{% endblock %}
 
 {% block content %}
 <h2>Your Bookmarked Articles</h2>
 <div class="article-grid">
     {% for bookmark in bookmarks %}
-        <article class="card">
+        <article class="card" data-article-card="{{ bookmark.article.slug }}">
+            {% with cover=bookmark.article.get_cover_url %}
+                {% if cover %}
+                    <a class="card-cover" href="{{ bookmark.article.get_absolute_url }}">
+                        <img src="{{ cover }}" alt="{{ bookmark.article.title }}">
+                    </a>
+                {% endif %}
+            {% endwith %}
             <h3><a href="{{ bookmark.article.get_absolute_url }}">{{ bookmark.article.title }}</a></h3>
             <p class="meta">
-                <span>{{ bookmark.article.author.username }}</span>
-                <span>{{ bookmark.article.published_at|date:"M d, Y" }}</span>
-                <span class="badge">{{ bookmark.article.category.name }}</span>
+                <a href="{% url 'articles:author_detail' bookmark.article.author.username %}">u/{{ bookmark.article.author.username }}</a>
+                <span class="meta-divider">&middot;</span>
+                {% with stamp=bookmark.article.published_at|default:bookmark.article.created_at %}
+                    <time datetime="{{ stamp|date:"c" }}" title="{{ stamp|date:"M j, Y H:i" }}">
+                        {{ stamp|naturaltime }}
+                    </time>
+                {% endwith %}
+                <span class="meta-divider">&middot;</span>
+                <a class="badge" href="{% url 'articles:category_detail' bookmark.article.category.slug %}">{{ bookmark.article.category.name }}</a>
             </p>
             <p>{{ bookmark.article.content|truncatewords:45 }}</p>
-            <div class="meta stats-row">
-                <span>Score {{ bookmark.article.score }}</span>
-                <span>👍 {{ bookmark.article.likes_count }}</span>
-                <span>👎 {{ bookmark.article.dislikes_count }}</span>
-                <span>💬 {{ bookmark.article.comments.count }}</span>
+            <div class="stats-row" data-article-stats="{{ bookmark.article.slug }}">
+                <span class="stat-chip" data-stat="score"><strong>{{ bookmark.article.score }}</strong> score</span>
+                <span class="stat-chip" data-stat="likes"><strong>{{ bookmark.article.likes_count }}</strong> upvotes</span>
+                <span class="stat-chip" data-stat="dislikes"><strong>{{ bookmark.article.dislikes_count }}</strong> downvotes</span>
+                <span class="stat-chip" data-stat="comments"><strong>{{ bookmark.article.comments.count }}</strong> comments</span>
             </div>
             <div class="article-actions">
                 <form method="post" action="{% url 'articles:toggle_bookmark' bookmark.article.slug %}">
@@ -33,3 +47,4 @@
     {% endfor %}
 </div>
 {% endblock %}
+

@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block title %}
-    {% if form.instance.pk %}Edit Article{% else %}Write Article{% endif %} - PC News
+    {% if form.instance.pk %}Edit Article{% else %}Write Article{% endif %} - Cetix
 {% endblock %}
 
 {% block content %}
@@ -17,7 +17,7 @@
         {{ form.non_field_errors }}
         <div class="form-grid">
             {% for field in form %}
-                <div class="form-group{% if field.field.widget.input_type == 'file' %} form-group-file{% endif %}{% if field.name == 'content' or field.name == 'cover_image' %} form-group-span{% endif %}">
+                <div class="form-group{% if field.field.widget.input_type == 'file' %} form-group-file{% endif %}{% if field.name == 'content' or field.name == 'cover_image' or field.name == 'external_cover_url' %} form-group-span{% endif %}">
                     <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                     {% if field.field.widget.input_type == "file" %}
                         <div class="file-upload" data-placeholder="Upload cover image">
@@ -39,13 +39,20 @@
                             {{ field }}
                         </div>
                         <small class="form-hint">JPG or PNG up to 5MB.</small>
-                        <div class="cover-preview{% if form.instance.cover_image %} show{% endif %}">
+                        <div class="cover-preview{% if form.instance.cover_image or form.instance.external_cover_url %} show{% endif %}">
                             {% if form.instance.cover_image %}
                                 <img src="{{ form.instance.cover_image.url }}" alt="Current cover image">
+                            {% elif form.instance.external_cover_url %}
+                                <img src="{{ form.instance.external_cover_url }}" alt="Current cover image">
                             {% endif %}
                         </div>
                     {% else %}
-                        {{ field }}
+                        {% if field.name == 'external_cover_url' %}
+                            {{ field }}
+                            <small class="form-hint">Paste an image URL if you prefer linking instead of uploading.</small>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
                     {% endif %}
                     {% if field.help_text %}
                         <small class="form-hint">{{ field.help_text }}</small>
@@ -65,3 +72,5 @@
     </form>
 </div>
 {% endblock %}
+
+
