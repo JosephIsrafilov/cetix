@@ -64,7 +64,7 @@ Project Structure
     -   `models.py` “ Category, Article, reactions, bookmarks, comments.
     -   `views.py` “ Feed, detail, category/author listings, moderation, bookmarks.
     -   `forms.py` “ Article creation with moderation awareness, comment form.
-    -   `management/commands/seed_demo_content.py` â€“ Demo seed script (covers, comments, reactions, bookmarks).
+    -   `management/commands/seed_demo_content.py` “ Demo seed script (covers, comments, reactions, bookmarks).
 -   `templates/` “ Dark themed UI with shared `page_hero` include and React-style interactions using vanilla JS.
 -   `static/css/style.css` “ Reddit-inspired styling, gradients, hero themes.
 -   `static/js/`
@@ -86,7 +86,7 @@ Feature Overview
 -   **Auth Experience**: custom registration, login, profile editor, console email password reset, password visibility toggles.
 -   **Seed Data**: optional command generates 15+ articles with cover images, interactions, and demo users.
 -   **Dark, Reddit-like UI**: gradient heroes, stat chips, redesigned cards, responsive layout.
--   **ASGI**: served via Djangoâ€™s ASGI (through `main.py`) â€“ works with Uvicorn/Gunicorn+Uvloop.
+-   **ASGI**: served via Django™s ASGI (through `main.py`) “ works with Uvicorn/Gunicorn+Uvloop.
 -   **Static Files**: WhiteNoise integrated; fallback cover images per category (Unsplash links).
 
 Environment Variables
