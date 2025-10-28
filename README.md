@@ -1,6 +1,6 @@
 Cetix
 
-Habr-inspired Django platform for publishing curated engineering articles with moderation workflow, role-based permissions, comments, reactions, bookmarks, and a sleek Reddit-esque dark theme.
+Habr-inspired Django platform for publishing curated engineering articles with moderation workflow, role-based permissions, comments, reactions, bookmarks, and a sleek dark theme.
 
 Site Overall
 -----------
