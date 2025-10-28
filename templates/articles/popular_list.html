@@ -1,0 +1,47 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Popular Articles - PC News{% endblock %}
+
+{% block hero %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-card">
+            <div class="hero-copy">
+                <h2>Community endorsed knowledge</h2>
+                <p>
+                    Dive into the highest scoring articles, carefully curated by fellow engineers who read, review,
+                    and react to the most impactful stories around the globe.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+<h2>Popular Articles</h2>
+<div class="article-grid">
+    {% for article in articles %}
+        <article class="card">
+            <h3><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3>
+            <p class="meta">
+                <span>{{ article.author.username }}</span>
+                <span>{{ article.published_at|date:"M d, Y" }}</span>
+                <span class="badge">{{ article.category.name }}</span>
+            </p>
+            <p>{{ article.content|truncatewords:45 }}</p>
+            <div class="meta stats-row">
+                <span>Score {{ article.net_score|default:article.score }}</span>
+                <span>👍 {{ article.total_likes|default:article.likes_count }}</span>
+                <span>👎 {{ article.total_dislikes|default:article.dislikes_count }}</span>
+                <span>💬 {{ article.comment_count|default:article.comments.count }}</span>
+            </div>
+            <div class="article-actions">
+                <a class="button secondary" href="{{ article.get_absolute_url }}">Read full article</a>
+            </div>
+        </article>
+    {% empty %}
+        <p class="empty-state">No popular articles yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

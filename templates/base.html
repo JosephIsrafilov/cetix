@@ -1,0 +1,71 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{% block title %}PC News{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="background-grid"></div>
+    <header class="site-header">
+        <div class="container header-inner">
+            <div class="logo-stack">
+                <a class="site-title" href="{% url 'articles:article_list' %}">PC News</a>
+                <span class="site-tagline">Daily insights for developers & makers</span>
+            </div>
+            <nav class="site-nav">
+                <ul class="nav-links">
+                    <li><a href="{% url 'articles:article_list' %}">Articles</a></li>
+                    <li><a href="{% url 'articles:popular_list' %}">Popular</a></li>
+                    <li><a href="{% url 'articles:category_list' %}">Categories</a></li>
+                    <li><a href="{% url 'articles:author_list' %}">Authors</a></li>
+                    {% if user.is_authenticated %}
+                        <li><a href="{% url 'articles:bookmark_list' %}">Bookmarks</a></li>
+                        {% if user.is_admin %}
+                            <li><a href="{% url 'articles:moderation_queue' %}">Moderation</a></li>
+                            <li><a href="{% url 'accounts:user_list' %}">Users</a></li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            </nav>
+            <div class="header-actions">
+                {% if user.is_authenticated %}
+                    <span class="profile-chip">{{ user.username }}</span>
+                    <form class="logout-form" method="post" action="{% url 'logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="ghost-link">Logout</button>
+                    </form>
+                    <a class="button primary" href="{% url 'articles:article_create' %}">Write Article</a>
+                {% else %}
+                    <a class="ghost-link" href="{% url 'login' %}">Login</a>
+                    <a class="button primary" href="{% url 'accounts:register' %}">Join PC News</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+    {% block hero %}{% endblock %}
+    <main class="container main-content">
+        {% if messages %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="message {{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            <p>&copy; {% now "Y" %} PC News &middot; Crafted for the community.</p>
+            <p class="footer-links">
+                <a href="{% url 'articles:category_list' %}">Explore topics</a>
+                <a href="{% url 'articles:popular_list' %}">Top stories</a>
+                <a href="{% url 'articles:author_list' %}">Meet the authors</a>
+            </p>
+        </div>
+    </footer>
+    <script src="{% static 'js/password-toggle.js' %}"></script>
+    <script src="{% static 'js/form-enhancements.js' %}"></script>
+</body>
+</html>

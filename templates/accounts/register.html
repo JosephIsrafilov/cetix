@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Register - PC News{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Create Account</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        {% for field in form %}
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {% if field.field.widget.input_type == "password" %}
+                <div class="password-toggle-wrapper">
+                    {{ field }}
+                </div>
+            {% else %}
+                {{ field }}
+            {% endif %}
+            {% if field.help_text %}
+                <small>{{ field.help_text }}</small>
+            {% endif %}
+            {% for error in field.errors %}
+                <p class="message error">{{ error }}</p>
+            {% endfor %}
+        {% endfor %}
+        <button class="button" type="submit">Register</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+</div>
+{% endblock %}

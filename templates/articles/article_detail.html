@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}{{ article.title }} - PC News{% endblock %}
+
+{% block content %}
+<article class="card article-detail">
+    <div class="detail-header">
+        <h1>{{ article.title }}</h1>
+        <div class="meta detail-meta">
+            <a href="{% url 'articles:author_detail' article.author.username %}">{{ article.author.username }}</a>
+            <span>{{ article.published_at|default:article.created_at|date:"M d, Y H:i" }}</span>
+            <a class="badge" href="{% url 'articles:category_detail' article.category.slug %}">{{ article.category.name }}</a>
+        </div>
+    </div>
+    {% if article.status != article.STATUS_PUBLISHED %}
+        <div class="inline-note warning">
+            Status: {{ article.get_status_display }}. Not visible publicly until moderation finishes.
+        </div>
+    {% endif %}
+    {% if article.cover_image %}
+        <div class="cover-frame">
+            <img class="article-cover" src="{{ article.cover_image.url }}" alt="{{ article.title }}">
+        </div>
+    {% endif %}
+    <div class="article-content">
+        {{ article.content|linebreaks }}
+    </div>
+    {% if user.is_authenticated and can_edit %}
+        <div class="article-actions">
+            <a class="button secondary" href="{% url 'articles:article_update' article.slug %}">Edit article</a>
+            <a class="button danger" href="{% url 'articles:article_delete' article.slug %}">Delete article</a>
+        </div>
+    {% endif %}
+</article>
+
+<section class="card engage-card">
+    <h3>Engage with this article</h3>
+    <p class="rating-summary">
+        Score {{ article.score }} · 👍 {{ article.likes_count }} · 👎 {{ article.dislikes_count }} · 💬 {{ comments_count }}
+    </p>
+    {% if user.is_authenticated %}
+        <div class="article-actions">
+            <form method="post" action="{% url 'articles:toggle_reaction' article.slug 'like' %}">
+                {% csrf_token %}
+                <button type="submit" class="button {% if user_reaction and user_reaction.value == 'like' %}active{% endif %}">Like</button>
+            </form>
+            <form method="post" action="{% url 'articles:toggle_reaction' article.slug 'dislike' %}">
+                {% csrf_token %}
+                <button type="submit" class="button {% if user_reaction and user_reaction.value == 'dislike' %}active{% endif %}">Dislike</button>
+            </form>
+            <form method="post" action="{% url 'articles:toggle_bookmark' article.slug %}">
+                {% csrf_token %}
+                <button type="submit" class="button secondary">
+                    {% if is_bookmarked %}Remove bookmark{% else %}Add bookmark{% endif %}
+                </button>
+            </form>
+        </div>
+        <form class="comment-form" method="post" action="{% url 'articles:comment_create' article.slug %}">
+            {% csrf_token %}
+            {{ comment_form.body }}
+            {{ comment_form.parent_id }}
+            <button type="submit" class="button primary">Post comment</button>
+        </form>
+    {% else %}
+        <p class="inline-note">
+            <a href="{% url 'login' %}?next={{ request.path }}">Login</a> to react, bookmark, or comment on this story.
+        </p>
+    {% endif %}
+</section>
+
+<section class="card comments-card">
+    <h3>Comments ({{ comments_count }})</h3>
+    {% if top_level_comments %}
+        <ul class="comment-list">
+            {% for comment in top_level_comments %}
+                <li class="comment-item">
+                    <div class="comment-meta">
+                        <strong>{{ comment.user.username }}</strong>
+                        <span>{{ comment.created_at|date:"M d, Y H:i" }}</span>
+                    </div>
+                    <p class="comment-body">{{ comment.body|linebreaks }}</p>
+                    {% if user.is_authenticated %}
+                        <form class="reply-form" method="post" action="{% url 'articles:comment_create' article.slug %}">
+                            {% csrf_token %}
+                            <textarea name="body" rows="2" placeholder="Reply to {{ comment.user.username }}"></textarea>
+                            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                            <button type="submit" class="button secondary">Reply</button>
+                        </form>
+                    {% endif %}
+                    {% if comment.replies.all %}
+                        <ul class="comment-replies">
+                            {% for reply in comment.replies.all %}
+                                <li class="comment-item">
+                                    <div class="comment-meta">
+                                        <strong>{{ reply.user.username }}</strong>
+                                        <span>{{ reply.created_at|date:"M d, Y H:i" }}</span>
+                                    </div>
+                                    <p class="comment-body">{{ reply.body|linebreaks }}</p>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="empty-state">No comments yet. Start the discussion!</p>
+    {% endif %}
+</section>
+{% endblock %}

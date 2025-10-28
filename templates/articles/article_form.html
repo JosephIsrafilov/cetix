@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Article{% else %}Write Article{% endif %} - PC News
+{% endblock %}
+
+{% block content %}
+<div class="card article-form-card">
+    <div class="article-form-header">
+        <h2>{% if form.instance.pk %}Edit Article{% else %}Write Article{% endif %}</h2>
+        <p class="meta">
+            Craft a compelling story for the community. Strong cover imagery and clear structure help your article stand out.
+        </p>
+    </div>
+    <form method="post" enctype="multipart/form-data" class="article-form">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="form-grid">
+            {% for field in form %}
+                <div class="form-group{% if field.field.widget.input_type == 'file' %} form-group-file{% endif %}{% if field.name == 'content' or field.name == 'cover_image' %} form-group-span{% endif %}">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {% if field.field.widget.input_type == "file" %}
+                        <div class="file-upload" data-placeholder="Upload cover image">
+                            <span class="file-upload-icon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M4 17.5V6.8C4 5.81 4.81 5 5.8 5h12.4c.99 0 1.8.81 1.8 1.8v10.7c0 .99-.81 1.8-1.8 1.8H6.2a2.2 2.2 0 0 1-2.2-2.2Z" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M4 15.5 9.05 11a1.8 1.8 0 0 1 2.54.1l2.68 2.93" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M17.5 12.5 20 15" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor"/>
+                                </svg>
+                            </span>
+                            <span class="file-upload-text">
+                                {% if form.instance.pk and form.instance.cover_image %}
+                                    Change cover image
+                                {% else %}
+                                    Upload cover image
+                                {% endif %}
+                            </span>
+                            {{ field }}
+                        </div>
+                        <small class="form-hint">JPG or PNG up to 5MB.</small>
+                        <div class="cover-preview{% if form.instance.cover_image %} show{% endif %}">
+                            {% if form.instance.cover_image %}
+                                <img src="{{ form.instance.cover_image.url }}" alt="Current cover image">
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+                    {% if field.help_text %}
+                        <small class="form-hint">{{ field.help_text }}</small>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <p class="message error">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        <div class="form-actions">
+            <button type="submit" class="button primary">
+                {% if form.instance.pk %}Save Changes{% else %}Publish for review{% endif %}
+            </button>
+            <a class="button secondary" href="{% url 'articles:article_list' %}">Back to feed</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

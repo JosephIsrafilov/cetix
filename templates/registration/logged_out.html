@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Logged Out - PC News{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>You have been logged out.</h2>
+    <p><a href="{% url 'login' %}">Login again</a> or return to the <a href="{% url 'articles:article_list' %}">home page</a>.</p>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}{{ author.username }} - PC News{% endblock %}
+
+{% block content %}
+<h2>Articles by {{ author.username }}</h2>
+<div class="article-grid">
+    {% for article in articles %}
+        <article class="card">
+            <h3><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3>
+            <p class="meta">
+                <span>{{ article.published_at|date:"M d, Y" }}</span>
+                <span class="badge">{{ article.category.name }}</span>
+            </p>
+            <p>{{ article.content|truncatewords:45 }}</p>
+            <div class="meta stats-row">
+                <span>Score {{ article.net_score|default:article.score }}</span>
+                <span>👍 {{ article.total_likes|default:article.likes_count }}</span>
+                <span>👎 {{ article.total_dislikes|default:article.dislikes_count }}</span>
+                <span>💬 {{ article.comment_count|default:article.comments.count }}</span>
+            </div>
+        </article>
+    {% empty %}
+        <p class="empty-state">This author has no published articles yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}

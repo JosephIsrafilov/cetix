@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Moderation Queue - PC News{% endblock %}
+
+{% block content %}
+<h2>Moderation Queue</h2>
+{% if articles %}
+    <div class="moderation-grid">
+        {% for article in articles %}
+            <div class="card moderation-card">
+                <h3>{{ article.title }}</h3>
+                <p class="meta">
+                    <span>{{ article.author.username }}</span>
+                    <span>{{ article.created_at|date:"M d, Y H:i" }}</span>
+                    <span class="badge">{{ article.category.name }}</span>
+                </p>
+                <div class="article-actions">
+                    <form method="post" action="{% url 'articles:article_moderate' article.slug 'publish' %}">
+                        {% csrf_token %}
+                        <button class="button primary" type="submit">Publish</button>
+                    </form>
+                    <form method="post" action="{% url 'articles:article_moderate' article.slug 'reject' %}">
+                        {% csrf_token %}
+                        <button class="button danger" type="submit">Reject</button>
+                    </form>
+                    <a class="button secondary" href="{{ article.get_absolute_url }}">Preview</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card">
+        <p class="empty-state">No articles awaiting moderation. Nice!</p>
+    </div>
+{% endif %}
+{% endblock %}

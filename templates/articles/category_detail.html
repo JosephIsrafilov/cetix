@@ -1,0 +1,39 @@
+﻿{% extends "base.html" %}
+
+{% block title %}{{ category.name }} Articles - PC News{% endblock %}
+
+{% block content %}
+<h2>{{ category.name }}</h2>
+<div class="article-grid">
+    {% for article in articles %}
+        <article class="card">
+            <h3><a href="{{ article.get_absolute_url }}">{{ article.title }}</a></h3>
+            <p class="meta">
+                <span>{{ article.author.username }}</span>
+                <span>{{ article.published_at|date:"M d, Y" }}</span>
+            </p>
+            <p>{{ article.content|truncatewords:45 }}</p>
+            <div class="meta stats-row">
+                <span>Score {{ article.net_score|default:article.score }}</span>
+                <span>👍 {{ article.total_likes|default:article.likes_count }}</span>
+                <span>👎 {{ article.total_dislikes|default:article.dislikes_count }}</span>
+                <span>💬 {{ article.comment_count|default:article.comments.count }}</span>
+            </div>
+        </article>
+    {% empty %}
+        <p class="empty-state">No articles in this category yet.</p>
+    {% endfor %}
+</div>
+
+{% if is_paginated %}
+    <div class="card">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

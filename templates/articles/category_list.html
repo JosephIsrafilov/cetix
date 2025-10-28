@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Categories - PC News{% endblock %}
+
+{% block content %}
+<h2>Categories</h2>
+<div class="category-grid">
+    {% for category in categories %}
+        <a class="category-card" href="{% url 'articles:category_detail' category.slug %}">
+            <h3>{{ category.name }}</h3>
+            <span class="meta">{{ category.published_count }} published articles</span>
+        </a>
+    {% endfor %}
+</div>
+{% endblock %}

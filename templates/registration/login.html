@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Login - PC News{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <label for="{{ form.username.id_for_label }}">Username</label>
+        {{ form.username }}
+        <label for="{{ form.password.id_for_label }}">Password</label>
+        <div class="password-toggle-wrapper">
+            {{ form.password }}
+        </div>
+        <button type="submit" class="button">Sign In</button>
+    </form>
+    <p class="meta"><a href="{% url 'accounts:password_reset_request' %}">Forgot your password?</a></p>
+    <p>Need an account? <a href="{% url 'accounts:register' %}">Register</a></p>
+</div>
+{% endblock %}

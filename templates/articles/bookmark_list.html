@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Bookmarks - PC News{% endblock %}
+
+{% block content %}
+<h2>Your Bookmarked Articles</h2>
+<div class="article-grid">
+    {% for bookmark in bookmarks %}
+        <article class="card">
+            <h3><a href="{{ bookmark.article.get_absolute_url }}">{{ bookmark.article.title }}</a></h3>
+            <p class="meta">
+                <span>{{ bookmark.article.author.username }}</span>
+                <span>{{ bookmark.article.published_at|date:"M d, Y" }}</span>
+                <span class="badge">{{ bookmark.article.category.name }}</span>
+            </p>
+            <p>{{ bookmark.article.content|truncatewords:45 }}</p>
+            <div class="meta stats-row">
+                <span>Score {{ bookmark.article.score }}</span>
+                <span>👍 {{ bookmark.article.likes_count }}</span>
+                <span>👎 {{ bookmark.article.dislikes_count }}</span>
+                <span>💬 {{ bookmark.article.comments.count }}</span>
+            </div>
+            <div class="article-actions">
+                <form method="post" action="{% url 'articles:toggle_bookmark' bookmark.article.slug %}">
+                    {% csrf_token %}
+                    <button class="button danger" type="submit">Remove bookmark</button>
+                </form>
+                <a class="button secondary" href="{{ bookmark.article.get_absolute_url }}">Read again</a>
+            </div>
+        </article>
+    {% empty %}
+        <p class="empty-state">You have no bookmarks yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
