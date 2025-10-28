@@ -465,3 +465,4 @@ class Command(BaseCommand):
                 body=random.choice(COMMENT_SNIPPETS).format(topic=article.category.name.lower()),
             )
 
+

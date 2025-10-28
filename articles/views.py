@@ -1,7 +1,9 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, F, Q
+from django.db.models import Avg, Count, F, Max, Q, Sum
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -48,6 +50,41 @@ class ArticleListView(ListView):
             .order_by("-net_score", "-published_at", "-created_at")
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        now = timezone.now()
+        total_articles = Article.published.count()
+        new_week = Article.published.filter(
+            published_at__gte=now - timedelta(days=7)
+        ).count()
+        active_authors = (
+            User.objects.filter(articles__status=Article.STATUS_PUBLISHED)
+            .distinct()
+            .count()
+        )
+        context["page_hero"] = {
+            "tag": "Cetix spotlight",
+            "title": "Fresh drops for engineers & builders",
+            "description": (
+                "Curated long-reads on backend, frontend, AI, cyber security, cyber sport, and game development. "
+                "Plug in, learn from real shipping teams, and level up your craft."
+            ),
+            "primary": {
+                "label": "Share your expertise",
+                "url": reverse("articles:article_create"),
+            },
+            "secondary": {
+                "label": "View trending topics",
+                "url": reverse("articles:popular_list"),
+            },
+            "stats": [
+                {"label": "published stories", "value": total_articles or 0},
+                {"label": "active authors", "value": active_authors or 0},
+                {"label": "new this week", "value": new_week or 0},
+            ],
+        }
+        return context
+
 
 class PopularArticleListView(ArticleListView):
     template_name = "articles/popular_list.html"
@@ -58,6 +95,50 @@ class PopularArticleListView(ArticleListView):
             .get_queryset()
             .filter(net_score__gte=5)
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.object_list
+        score_expr = F("total_likes") - F("total_dislikes")
+        aggregates = qs.aggregate(
+            top_score=Max(score_expr),
+            avg_score=Avg(score_expr),
+        )
+        hottest_category = (
+            qs.values("category__name")
+            .annotate(count=Count("id"))
+            .order_by("-count")
+            .first()
+        )
+        context["page_hero"] = {
+            "tag": "Popular right now",
+            "title": "Community endorsed knowledge",
+            "description": (
+                "Every article here cleared a score of five and keeps pulling reactions from the community."
+            ),
+            "primary": {
+                "label": "Submit your draft",
+                "url": reverse("articles:article_create"),
+            },
+            "secondary": {
+                "label": "Back to latest",
+                "url": reverse("articles:article_list"),
+            },
+            "stats": [
+                {"label": "top score", "value": aggregates["top_score"] or 0},
+                {
+                    "label": "avg score",
+                    "value": round(aggregates["avg_score"], 1)
+                    if aggregates["avg_score"] is not None
+                    else 0,
+                },
+                {
+                    "label": "hottest topic",
+                    "value": hottest_category["category__name"] if hottest_category else "-",
+                },
+            ],
+        }
+        return context
 
 
 class ArticleDetailView(DetailView):
@@ -216,6 +297,29 @@ class PendingArticleListView(RoleRequiredMixin, ListView):
             .order_by("created_at")
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = context["articles"]
+        pending_count = qs.count()
+        oldest = qs.first()
+        oldest_age = (
+            (timezone.now() - oldest.created_at).days if oldest else 0
+        )
+        context["page_hero"] = {
+            "tag": "Moderation desk",
+            "title": "Review the latest submissions",
+            "description": "Approve the strongest write-ups, send feedback, and keep the feed trustworthy.",
+            "stats": [
+                {"label": "pending items", "value": pending_count},
+                {"label": "oldest in queue (days)", "value": oldest_age},
+                {
+                    "label": "recent approver",
+                    "value": self.request.user.username,
+                },
+            ],
+        }
+        return context
+
 
 class ArticleModerateView(RoleRequiredMixin, View):
     allowed_roles = ("is_admin",)
@@ -255,6 +359,37 @@ class CategoryListView(ListView):
             .order_by("name")
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.object_list
+        total_categories = qs.count()
+        total_articles = sum(category.published_count for category in qs)
+        busiest = max(qs, key=lambda cat: cat.published_count, default=None)
+        context["page_hero"] = {
+            "tag": "Explore by topic",
+            "title": "Pick your discipline, dive deep",
+            "description": (
+                "From backend hardening to esports analytics, every category curates hands-on knowledge for practitioners."
+            ),
+            "primary": {
+                "label": "Write in a category",
+                "url": reverse("articles:article_create"),
+            },
+            "secondary": {
+                "label": "Browse popular",
+                "url": reverse("articles:popular_list"),
+            },
+            "stats": [
+                {"label": "categories", "value": total_categories or 0},
+                {"label": "published pieces", "value": total_articles or 0},
+                {
+                    "label": "busiest track",
+                    "value": busiest.name if busiest else "-",
+                },
+            ],
+        }
+        return context
+
 
 class CategoryArticleListView(ListView):
     model = Article
@@ -283,7 +418,42 @@ class CategoryArticleListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        qs = self.object_list
+        score_expr = F("total_likes") - F("total_dislikes")
+        aggregates = qs.aggregate(
+            top_score=Max(score_expr),
+            avg_score=Avg(score_expr),
+        )
+        contributors = (
+            qs.values("author")
+            .distinct()
+            .count()
+        )
         context["category"] = self.category
+        context["page_hero"] = {
+            "tag": self.category.name,
+            "title": f"{self.category.name} knowledge base",
+            "description": self.category.description
+            or "Featured research, write-ups, and war stories curated for this discipline.",
+            "primary": {
+                "label": "Publish in this topic",
+                "url": reverse("articles:article_create"),
+            },
+            "secondary": {
+                "label": "All categories",
+                "url": reverse("articles:category_list"),
+            },
+            "stats": [
+                {"label": "articles", "value": qs.count()},
+                {"label": "active authors", "value": contributors},
+                {
+                    "label": "avg score",
+                    "value": round(aggregates["avg_score"], 1)
+                    if aggregates["avg_score"] is not None
+                    else 0,
+                },
+            ],
+        }
         return context
 
 
@@ -305,6 +475,35 @@ class AuthorListView(ListView):
             .order_by("username")
         )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.object_list
+        total_authors = qs.count()
+        total_articles = sum(author.published_count for author in qs)
+        top_author = max(qs, key=lambda author: author.published_count, default=None)
+        context["page_hero"] = {
+            "tag": "Meet the writers",
+            "title": "Authors shipping knowledge in public",
+            "description": "Follow the engineers pushing code, penning retrospectives, and breaking down their playbooks.",
+            "primary": {
+                "label": "Become an author",
+                "url": reverse("articles:article_create"),
+            },
+            "secondary": {
+                "label": "Request feature",
+                "url": reverse("articles:article_list"),
+            },
+            "stats": [
+                {"label": "active authors", "value": total_authors or 0},
+                {"label": "published pieces", "value": total_articles or 0},
+                {
+                    "label": "top contributor",
+                    "value": top_author.username if top_author else "-",
+                },
+            ],
+        }
+        return context
+
 
 class AuthorDetailView(DetailView):
     model = User
@@ -315,7 +514,7 @@ class AuthorDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["articles"] = (
+        articles_qs = (
             self.object.articles.filter(status=Article.STATUS_PUBLISHED)
             .select_related("category")
             .annotate(
@@ -333,6 +532,38 @@ class AuthorDetailView(DetailView):
             )
             .annotate(net_score=F("total_likes") - F("total_dislikes"))
         )
+        context["articles"] = articles_qs
+        score_expr = F("total_likes") - F("total_dislikes")
+        aggregates = articles_qs.aggregate(
+            total_score=Sum(score_expr),
+            avg_score=Avg(score_expr),
+        )
+        context["page_hero"] = {
+            "tag": f"u/{self.object.username}",
+            "title": f"{self.object.get_full_name() or self.object.username}'s publishing log",
+            "description": self.object.bio or "Deep dives, experiments, and lessons shared straight from the author.",
+            "primary": {
+                "label": "Follow their articles",
+                "url": reverse("articles:author_list"),
+            },
+            "secondary": {
+                "label": "View latest",
+                "url": reverse("articles:article_list"),
+            },
+            "stats": [
+                {"label": "published", "value": articles_qs.count()},
+                {
+                    "label": "total score",
+                    "value": aggregates["total_score"] or 0,
+                },
+                {
+                    "label": "avg score",
+                    "value": round(aggregates["avg_score"], 1)
+                    if aggregates["avg_score"] is not None
+                    else 0,
+                },
+            ],
+        }
         return context
 
 
@@ -362,6 +593,42 @@ class BookmarkListView(LoginRequiredMixin, ListView):
             )
             .order_by("-created_at")
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qs = self.object_list
+        total_saved = qs.count()
+        topic_count = (
+            qs.values("article__category__name")
+            .distinct()
+            .count()
+        )
+        latest = qs.first()
+        latest_title = latest.article.title if latest else "-"
+        if latest_title != "-" and len(latest_title) > 36:
+            latest_title = f"{latest_title[:33]}..."
+        context["page_hero"] = {
+            "tag": "Reading list",
+            "title": "Your saved knowledge hub",
+            "description": "Come back to the deep dives you bookmarked. Keep refining that personal playbook.",
+            "primary": {
+                "label": "Discover new posts",
+                "url": reverse("articles:article_list"),
+            },
+            "secondary": {
+                "label": "Explore categories",
+                "url": reverse("articles:category_list"),
+            },
+            "stats": [
+                {"label": "bookmarked", "value": total_saved},
+                {"label": "categories", "value": topic_count},
+                {
+                    "label": "last saved",
+                    "value": latest_title,
+                },
+            ],
+        }
+        return context
 
 
 class ToggleBookmarkView(LoginRequiredMixin, View):

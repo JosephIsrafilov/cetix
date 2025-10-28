@@ -3,8 +3,11 @@
 
 {% block title %}Moderation Queue - Cetix{% endblock %}
 
+{% block hero %}
+{% include "includes/page_hero.html" %}
+{% endblock %}
+
 {% block content %}
-<h2>Moderation Queue</h2>
 {% if articles %}
     <div class="moderation-grid">
         {% for article in articles %}
@@ -39,4 +42,3 @@
     </div>
 {% endif %}
 {% endblock %}
-

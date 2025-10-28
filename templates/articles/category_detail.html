@@ -3,8 +3,11 @@
 
 {% block title %}{{ category.name }} Articles - Cetix{% endblock %}
 
+{% block hero %}
+{% include "includes/page_hero.html" %}
+{% endblock %}
+
 {% block content %}
-<h2>{{ category.name }}</h2>
 <div class="article-grid">
     {% for article in articles %}
         <article class="card" data-article-card="{{ article.slug }}">

@@ -4,23 +4,7 @@
 {% block title %}Latest Articles - Cetix{% endblock %}
 
 {% block hero %}
-<section class="hero">
-    <div class="container">
-        <div class="hero-card">
-            <div class="hero-copy">
-                <h2>Fresh stories from engineers & product makers</h2>
-                <p>
-                    Stay ahead with curated deep dives on backend, frontend, AI, cyber security, cyber sport, and game development.
-                    Discover what the community is building today.
-                </p>
-            </div>
-            <div class="hero-cta">
-                <a class="button primary" href="{% url 'articles:article_create' %}">Share your expertise</a>
-                <a class="button secondary" href="{% url 'articles:popular_list' %}">View trending topics</a>
-            </div>
-        </div>
-    </div>
-</section>
+{% include "includes/page_hero.html" %}
 {% endblock %}
 
 {% block content %}

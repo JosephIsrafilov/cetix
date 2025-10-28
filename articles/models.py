@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
@@ -6,12 +7,12 @@ from django.utils.text import slugify
 
 
 CATEGORY_FALLBACK_COVERS = {
-    "Backend": "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
-    "Frontend": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d",
-    "AI": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d",
-    "Cyber Security": "https://images.unsplash.com/photo-1510511459019-5dda7724fd87",
-    "Cyber Sport": "https://images.unsplash.com/photo-1511512578047-dfb367046420",
-    "Game Development": "https://images.unsplash.com/photo-1511511773361-7e09e79b4efe",
+    "Backend": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80",
+    "Frontend": "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80",
+    "AI": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80",
+    "Cyber Security": "https://images.unsplash.com/photo-1510511459019-5dda7724fd87?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80",
+    "Cyber Sport": "https://images.unsplash.com/photo-1511512578047-dfb367046420?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80",
+    "Game Development": "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1400&q=80",
 }
 
 User = settings.AUTH_USER_MODEL
@@ -152,7 +153,11 @@ class Article(models.Model):
         if category_name:
             fallback_base = CATEGORY_FALLBACK_COVERS.get(category_name)
             if fallback_base:
-                return f"{fallback_base}?auto=format&fit=crop&w=1400&q=80"
+                if "?" in fallback_base:
+                    return fallback_base
+                return (
+                    f"{fallback_base}?ixlib=rb-4.0.3&auto=format&fit=crop&w=1400&q=80"
+                )
         return None
 
 
@@ -219,3 +224,6 @@ class ArticleComment(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user} on {self.article}: {self.body[:40]}"
+
+
+

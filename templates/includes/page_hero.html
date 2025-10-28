@@ -1,0 +1,46 @@
+{% if page_hero %}
+<section class="hero">
+    <div class="container">
+        <div class="hero-card{% if page_hero.stats %} hero-card--stats{% else %} hero-card--solo{% endif %}">
+            <div class="hero-main">
+                {% if page_hero.tag %}
+                    <span class="hero-pill">{{ page_hero.tag }}</span>
+                {% endif %}
+                {% if page_hero.title %}
+                    <h2>{{ page_hero.title }}</h2>
+                {% endif %}
+                {% if page_hero.description %}
+                    <p>{{ page_hero.description }}</p>
+                {% endif %}
+                {% if page_hero.primary or page_hero.secondary %}
+                    <div class="hero-cta">
+                        {% if page_hero.primary %}
+                            <a class="button primary" href="{{ page_hero.primary.url }}">
+                                {{ page_hero.primary.label }}
+                            </a>
+                        {% endif %}
+                        {% if page_hero.secondary %}
+                            <a class="button secondary" href="{{ page_hero.secondary.url }}">
+                                {{ page_hero.secondary.label }}
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+            {% if page_hero.stats %}
+                <div class="hero-side">
+                    <ul class="hero-stats">
+                        {% for stat in page_hero.stats %}
+                            <li>
+                                <strong>{{ stat.value }}</strong>
+                                <span>{{ stat.label }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
