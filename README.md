@@ -14,11 +14,6 @@ Requirements
 -   Python 3.12
 -   pip / virtualenv
 -   SQLite (bundled) -- or configure your own database via `DATABASES`
-=======
-- Python 3.12
-- pip / virtualenv
-- SQLite (bundled) -- or configure your own database via `DATABASES`
-- Git (optional but recommended)
 
 Quick Start
 -----------
@@ -46,9 +41,11 @@ Quick Start
        python manage.py seed_demo_content --flush-existing  # optional sample data
         python manage.py migrate
         python manage.py seed_demo_content --flush-existing  #sample data for project
-=======
+
+
 5. **Create a superuser (optional but useful)**
        python manage.py createsuperuser
+
 6. **Run the development server**
 
        python manage.py runserver
