@@ -10,7 +10,6 @@ Site Overall
 
 Requirements
 ------------
-<<<<<<< Updated upstream
 
 -   Python 3.12
 -   pip / virtualenv
@@ -20,7 +19,6 @@ Requirements
 - pip / virtualenv
 - SQLite (bundled) -- or configure your own database via `DATABASES`
 - Git (optional but recommended)
->>>>>>> Stashed changes
 
 Quick Start
 -----------
@@ -46,16 +44,11 @@ Quick Start
 
        python manage.py migrate
        python manage.py seed_demo_content --flush-existing  # optional sample data
-
-<<<<<<< Updated upstream
         python manage.py migrate
         python manage.py seed_demo_content --flush-existing  #sample data for project
 =======
 5. **Create a superuser (optional but useful)**
->>>>>>> Stashed changes
-
        python manage.py createsuperuser
-
 6. **Run the development server**
 
        python manage.py runserver
@@ -68,8 +61,6 @@ Quick Start
 
 Project Structure
 -----------------
-<<<<<<< Updated upstream
-
 -   `accounts/` “ custom user model, roles, profiles, auth forms, password reset.
 -   `articles/`
     -   `models.py` “ Category, Article, reactions, bookmarks, comments.
@@ -145,7 +136,6 @@ Customize via env vars or `.env`:
 - `DJANGO_ALLOWED_HOSTS`
 - Email settings (`EMAIL_BACKEND`, `EMAIL_HOST`, etc.)
 - `DATABASE_URL` if using Postgres/MySQL
->>>>>>> Stashed changes
 
 Deployment Notes
 ----------------
@@ -160,20 +150,3 @@ Development Scripts
 - Lint/format: integrate `ruff`, `black`, `pre-commit`
 - Tests: `python manage.py test`
 - Seed demo data: `python manage.py seed_demo_content --flush-existing`
-
-Contributing
-------------
-1. Fork and clone the repo
-2. Create a feature branch (`git checkout -b feature/awesome`)
-3. Install dependencies & set up environment
-4. Run tests (and add new ones)
-5. Submit a pull request with details/screenshots
-
-<<<<<<< Updated upstream
-
-
-=======
-License
--------
-MIT License. Free for your own projects -- attribute if you ship enhancements!
->>>>>>> Stashed changes
