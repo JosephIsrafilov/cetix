@@ -1,0 +1,51 @@
+{% load pagination_tags %}
+{% if is_paginated and page_obj %}
+<nav class="pagination" aria-label="Pagination">
+    <div class="pagination-info">
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+    </div>
+    <ul class="pagination-list">
+        <li>
+            {% if page_obj.has_previous %}
+                <a class="pagination-link" href="?page=1" aria-label="First page">First</a>
+            {% else %}
+                <span class="pagination-link disabled">First</span>
+            {% endif %}
+        </li>
+        <li>
+            {% if page_obj.has_previous %}
+                <a class="pagination-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous page">&larr; Prev</a>
+            {% else %}
+                <span class="pagination-link disabled">&larr; Prev</span>
+            {% endif %}
+        </li>
+        {% elided_page_range page_obj.paginator page_obj.number as page_range %}
+        {% for page in page_range %}
+            <li>
+                {% if page == '...' %}
+                    <span class="pagination-link ellipsis">...</span>
+                {% elif page == page_obj.number %}
+                    <span class="pagination-link is-current" aria-current="page">{{ page }}</span>
+                {% else %}
+                    <a class="pagination-link" href="?page={{ page }}">{{ page }}</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+        <li>
+            {% if page_obj.has_next %}
+                <a class="pagination-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next page">Next &rarr;</a>
+            {% else %}
+                <span class="pagination-link disabled">Next &rarr;</span>
+            {% endif %}
+        </li>
+        <li>
+            {% if page_obj.has_next %}
+                <a class="pagination-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last page">Last</a>
+            {% else %}
+                <span class="pagination-link disabled">Last</span>
+            {% endif %}
+        </li>
+    </ul>
+</nav>
+{% endif %}
+

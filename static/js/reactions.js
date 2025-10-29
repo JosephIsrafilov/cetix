@@ -92,10 +92,7 @@ ready(() => {
             sessionStorage.setItem(
                 `${STORAGE_PREFIX}${slug}`,
                 JSON.stringify(payload)
-            );
-        } catch (error) {
-            // Ignore storage failures (quota, disabled, etc.).
-        }
+            );\n        } catch (error) {}
         syncArticleCards(slug, payload);
     }
 

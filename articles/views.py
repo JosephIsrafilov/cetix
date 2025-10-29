@@ -47,7 +47,7 @@ class ArticleListView(ListView):
                 comment_count=Count("comments", distinct=True),
             )
             .annotate(net_score=F("total_likes") - F("total_dislikes"))
-            .order_by("-net_score", "-published_at", "-created_at")
+            .order_by("-published_at", "-created_at")
         )
 
     def get_context_data(self, **kwargs):

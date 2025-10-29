@@ -6,9 +6,6 @@ from django.utils import timezone
 
 
 class User(AbstractUser):
-    """
-    Application user supporting explicit role management and ban tracking.
-    """
 
     ROLE_SUPER_ADMIN = "super_admin"
     ROLE_ADMIN = "admin"
@@ -34,10 +31,8 @@ class User(AbstractUser):
         update_fields = kwargs.get("update_fields")
         if update_fields is not None:
             update_fields = set(update_fields)
-        # Ensure banned users cannot authenticate.
         if self.is_banned:
             self.is_active = False
-        # Keep role and Django flags in sync.
         if self.is_superuser:
             self.role = self.ROLE_SUPER_ADMIN
             self.is_staff = True
