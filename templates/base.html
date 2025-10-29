@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8">
     <title>{% block title %}Cetix{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
@@ -11,7 +12,10 @@
     <header class="site-header">
         <div class="container header-inner">
             <div class="logo-stack">
-                <a class="site-title" href="{% url 'articles:article_list' %}">Cetix</a>
+                <a class="site-title" href="{% url 'articles:article_list' %}">
+                    <img class="site-title-icon" src="{% static 'favicon.ico' %}" alt="Cetix icon">
+                    <span>Cetix</span>
+                </a>
                 <span class="site-tagline">Deep dives for developers & makers</span>
             </div>
             <nav class="site-nav">

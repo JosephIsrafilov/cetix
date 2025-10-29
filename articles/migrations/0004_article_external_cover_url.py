@@ -1,7 +1,3 @@
-<<<<<<< Updated upstream
-=======
-
->>>>>>> Stashed changes
 from django.db import migrations, models
 
 
@@ -18,3 +14,5 @@ class Migration(migrations.Migration):
             field=models.URLField(blank=True),
         ),
     ]
+
+

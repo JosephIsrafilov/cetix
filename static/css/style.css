@@ -90,10 +90,21 @@ a:focus {
 }
 
 .site-title {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
     font-size: 1.6rem;
     font-weight: 700;
     color: #f6f7f8;
     letter-spacing: 0.01em;
+}
+
+.site-title-icon {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    box-shadow: 0 4px 14px rgba(82, 147, 255, 0.18);
 }
 
 .site-tagline {
