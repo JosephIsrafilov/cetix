@@ -1,0 +1,19 @@
+<div class="rail-card">
+    <h3>Trending topics</h3>
+    <ul class="rail-list">
+        <li><a href="{% url 'articles:category_detail' 'backend' %}">Backend engineering</a></li>
+        <li><a href="{% url 'articles:category_detail' 'frontend' %}">Frontend craft</a></li>
+        <li><a href="{% url 'articles:category_detail' 'ai' %}">AI &amp; ML</a></li>
+        <li><a href="{% url 'articles:category_detail' 'cyber-security' %}">Cyber security</a></li>
+        <li><a href="{% url 'articles:category_detail' 'cyber-sport' %}">Cyber sport</a></li>
+        <li><a href="{% url 'articles:category_detail' 'game-development' %}">Game development</a></li>
+    </ul>
+</div>
+
+<div class="rail-card">
+    <h3>Creator toolkit</h3>
+    <p>Keep posts concise, add practical takeaways, and include visuals so readers stay engaged.</p>
+    <div class="rail-actions">
+        <a class="button primary" href="{% url 'articles:article_create' %}">Write a post</a>
+    </div>
+</div>

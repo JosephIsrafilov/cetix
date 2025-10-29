@@ -1,0 +1,27 @@
+<div class="rail-card rail-card--nav">
+    <h3>Browse</h3>
+    <nav class="rail-links" aria-label="Primary navigation">
+        <a class="rail-link" href="{% url 'articles:article_list' %}">Home</a>
+        <a class="rail-link" href="{% url 'articles:popular_list' %}">Popular</a>
+        <a class="rail-link" href="{% url 'articles:category_list' %}">Categories</a>
+        <a class="rail-link" href="{% url 'articles:author_list' %}">Authors</a>
+        {% if user.is_authenticated %}
+            <a class="rail-link" href="{% url 'articles:bookmark_list' %}">Bookmarks</a>
+            {% if user.is_admin %}
+                <a class="rail-link" href="{% url 'articles:moderation_queue' %}">Moderation</a>
+                <a class="rail-link" href="{% url 'accounts:user_list' %}">Users</a>
+            {% endif %}
+        {% endif %}
+    </nav>
+</div>
+
+{% if not user.is_authenticated %}
+    <div class="rail-card rail-card--profile">
+        <h3>Join Cetix</h3>
+        <p>Swap ideas with the community, follow authors, and join the conversation.</p>
+        <div class="rail-actions">
+            <a class="button primary" href="{% url 'accounts:register' %}">Create account</a>
+            <a class="button secondary" href="{% url 'login' %}">Sign in</a>
+        </div>
+    </div>
+{% endif %}
