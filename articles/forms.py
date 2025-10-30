@@ -24,7 +24,8 @@ class ArticleForm(forms.ModelForm):
                 ],
                 initial=self.instance.status if self.instance.pk else Article.STATUS_PUBLISHED,
             )
-            self.fields.move_to_end("status")
+            status_field = self.fields.pop("status")
+            self.fields["status"] = status_field
 
     def clean(self):
         cleaned = super().clean()

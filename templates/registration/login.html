@@ -14,7 +14,11 @@
         <div class="password-toggle-wrapper">
             {{ form.password }}
         </div>
-        <button type="submit" class="button">Sign In</button>
+        <div class="form-actions stacked">
+            <button type="submit" class="button primary wide">
+                <span>Sign In</span>
+            </button>
+        </div>
     </form>
     <p class="meta"><a href="{% url 'accounts:password_reset_request' %}">Forgot your password?</a></p>
     <p>Need an account? <a href="{% url 'accounts:register' %}">Register</a></p>

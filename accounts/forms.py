@@ -11,6 +11,21 @@ class SignUpForm(UserCreationForm):
         model = User
         fields = ("username", "email", "password1", "password2")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["password1"].widget.attrs.update(
+            {
+                "data-password-primary": "true",
+                "autocomplete": "new-password",
+            }
+        )
+        self.fields["password2"].widget.attrs.update(
+            {
+                "data-password-confirm": "true",
+                "autocomplete": "new-password",
+            }
+        )
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data["email"]
@@ -41,11 +56,21 @@ class PasswordResetConfirmForm(forms.Form):
     code = forms.CharField(max_length=6, min_length=6)
     new_password1 = forms.CharField(
         label="New password",
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(
+            attrs={
+                "data-password-primary": "true",
+                "autocomplete": "new-password",
+            }
+        ),
     )
     new_password2 = forms.CharField(
         label="Confirm new password",
-        widget=forms.PasswordInput,
+        widget=forms.PasswordInput(
+            attrs={
+                "data-password-confirm": "true",
+                "autocomplete": "new-password",
+            }
+        ),
     )
 
     def clean(self):
