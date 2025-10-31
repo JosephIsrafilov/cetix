@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+﻿@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
     --bg-base: #0f1419;
@@ -323,52 +323,49 @@ a:focus {
     gap: 0.4rem;
     padding: 0.55rem 1.4rem;
     border-radius: 999px;
-    border: 1px solid rgba(29, 155, 240, 0.32);
+    border: 1px solid var(--border);
     cursor: pointer;
     font-weight: 600;
     font-size: 0.95rem;
     transition: var(--transition);
-    background: linear-gradient(140deg, rgba(6, 10, 16, 0.96), rgba(12, 20, 30, 0.94));
-    color: rgba(214, 230, 255, 0.92);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 14px 28px rgba(6, 12, 20, 0.4);
+    background: transparent;
+    color: var(--text);
 }
 
 .button.primary {
-    background: linear-gradient(140deg, rgba(29, 155, 240, 0.92), rgba(54, 186, 255, 0.85));
+    background: var(--accent);
     color: var(--bg-base);
-    border-color: rgba(45, 180, 255, 0.55);
-    box-shadow: 0 16px 32px rgba(9, 138, 220, 0.35);
+    border-color: transparent;
+    box-shadow: 0 12px 28px rgba(29, 155, 240, 0.3);
 }
 
 .button.primary:hover {
-    background: linear-gradient(140deg, rgba(45, 180, 255, 0.96), rgba(88, 206, 255, 0.92));
+    background: rgba(29, 155, 240, 0.88);
 }
 
 .button.secondary {
-    background: linear-gradient(140deg, rgba(8, 14, 22, 0.96), rgba(24, 44, 60, 0.85));
-    border-color: rgba(29, 155, 240, 0.24);
+    background: rgba(29, 155, 240, 0.12);
+    border-color: transparent;
 }
 
 .button.secondary:hover {
-    background: linear-gradient(140deg, rgba(12, 20, 28, 0.98), rgba(38, 68, 92, 0.9));
-    border-color: rgba(45, 180, 255, 0.38);
+    background: rgba(29, 155, 240, 0.22);
 }
 
 .button.danger {
-    background: linear-gradient(140deg, rgba(26, 18, 28, 0.96), rgba(76, 22, 40, 0.82));
-    color: rgba(255, 222, 235, 0.9);
-    border-color: rgba(255, 105, 168, 0.35);
+    background: rgba(29, 155, 240, 0.18);
+    color: var(--text);
+    border-color: transparent;
 }
 
 .button.danger:hover {
-    background: linear-gradient(140deg, rgba(32, 22, 36, 0.98), rgba(102, 32, 54, 0.9));
-    border-color: rgba(255, 105, 168, 0.55);
+    background: rgba(29, 155, 240, 0.28);
 }
 
 .button.active {
-    background: linear-gradient(140deg, rgba(14, 22, 34, 0.98), rgba(29, 155, 240, 0.55));
+    background: rgba(29, 155, 240, 0.24);
     color: var(--accent);
-    border-color: rgba(45, 180, 255, 0.45);
+    border-color: transparent;
 }
 
 .button:disabled {
@@ -1094,124 +1091,63 @@ h1, h2, h3, h4 {
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: 0.9rem;
+    gap: 1rem;
 }
 
 .comment-actions {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    background: rgba(5, 10, 16, 0.68);
-    border-radius: 999px;
-    padding: 0.25rem 0.35rem;
-    border: 1px solid rgba(29, 155, 240, 0.18);
+    gap: 1.1rem;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.comment-vote,
+.comment-reply-button,
+##DELBTN## {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.85rem;
+}
+
+.comment-vote:hover,
+.comment-vote.active,
+.comment-reply-button:hover,
+.comment-reply-button.active,
+##DELBTN##:hover,
+##DELBTN##:focus {
+    color: var(--highlight);
+    background: rgba(29, 155, 240, 0.18);
+    border-color: rgba(29, 155, 240, 0.24);
+}
+
+.comment-reply-button {
+    font-weight: 600;
 }
 
 .comment-delete-form {
     display: inline;
 }
 
-.comment-pill-button {
+##DELBTN## {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 38px;
-    padding: 0.35rem 1.05rem;
-    border-radius: 999px;
-    border: 1px solid rgba(29, 155, 240, 0.42);
-    background: linear-gradient(140deg, rgba(6, 10, 16, 0.96) 0%, rgba(14, 22, 32, 0.94) 52%, rgba(29, 155, 240, 0.32) 100%);
-    color: rgba(214, 230, 255, 0.92);
-    font-size: 0.86rem;
-    font-weight: 600;
-    letter-spacing: 0.015em;
-    cursor: pointer;
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04), 0 12px 26px rgba(6, 12, 20, 0.45);
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(21, 32, 43, 0.68);
+    color: var(--text-muted);
     transition: var(--transition);
-    gap: 0.4rem;
-    appearance: none;
-    -webkit-appearance: none;
 }
 
-.comment-pill-button.is-icon {
-    padding: 0;
-    width: 38px;
-    min-width: 38px;
-    height: 38px;
-    font-size: 1.05rem;
-    line-height: 1;
-}
-
-.comment-pill-button svg {
+##DELBTN## svg {
     display: block;
-}
-
-.comment-pill-button:hover,
-.comment-pill-button:focus,
-.comment-pill-button.active {
-    color: #dff2ff;
-    border-color: rgba(45, 180, 255, 0.85);
-    background: linear-gradient(140deg, rgba(12, 20, 30, 0.98) 0%, rgba(29, 155, 240, 0.62) 62%, rgba(72, 188, 255, 0.82) 100%);
-    box-shadow: 0 18px 32px rgba(10, 18, 30, 0.6);
-}
-
-.comment-delete-button {
-    border-color: rgba(29, 155, 240, 0.68);
-    background: linear-gradient(160deg, rgba(6, 10, 15, 0.96) 0%, rgba(12, 22, 32, 0.94) 52%, rgba(29, 155, 240, 0.42) 100%);
-}
-
-.comment-delete-button:hover,
-.comment-delete-button:focus {
-    border-color: rgba(45, 180, 255, 0.92);
-    background: linear-gradient(160deg, rgba(12, 18, 28, 0.98), rgba(29, 155, 240, 0.68));
-}
-
-.comment-pill-button.comment-vote {
-    padding: 0;
-    width: 38px;
-    min-width: 38px;
-    height: 38px;
-}
-
-
-
-
-
-
-
-
-.comment-pill-button.comment-reply-button {
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-size: 0.75rem;
-    padding: 0.4rem 1.35rem 0.4rem 1.05rem;
-}
-
-.comment-pill-button .icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    font-size: 0.92rem;
-}
-
-.comment-pill-button .label {
-    display: inline-flex;
-    align-items: center;
-}
-
-.comment-pill-button.comment-reply-button .icon {
-    margin-right: 0.45rem;
-    font-size: 0.85rem;
-}
-
-.comment-pill-button.comment-vote .icon {
-    font-size: 0.95rem;
-}
-
-.comment-pill-button.comment-delete-button .icon {
-    width: 18px;
-    height: 18px;
 }
 
 .reply-form.hidden {
@@ -1759,6 +1695,34 @@ img {
     }
 }
 
+.comment-vote {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    font-size: 0.9rem;
+}
+
+.comment-vote:hover,
+.comment-vote.active {
+    color: var(--highlight);
+}
+
+.comment-reply-button {
+    background: none;
+    border: none;
+    color: var(--highlight);
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0;
+}
+
+.comment-reply-button:hover,
+.comment-reply-button.active {
+    color: white;
+}
+
 .reply-form.hidden {
     display: none;
 }
@@ -1770,102 +1734,4 @@ img {
     display: grid;
     gap: 1.2rem;
 }
-.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 
-
-
-.confirm-modal {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2.5rem 1.5rem;
-    background: rgba(4, 10, 18, 0.78);
-    backdrop-filter: blur(18px);
-    z-index: 80;
-}
-
-.confirm-modal.hidden {
-    display: none !important;
-}
-
-body.modal-open {
-    overflow: hidden;
-}
-
-.confirm-modal-panel {
-    width: min(420px, 100%);
-    background: linear-gradient(160deg, rgba(10, 14, 22, 0.96), rgba(17, 24, 34, 0.96));
-    border: 1px solid rgba(29, 155, 240, 0.32);
-    border-radius: 24px;
-    box-shadow: 0 26px 54px rgba(3, 7, 13, 0.6);
-    display: grid;
-    gap: 1.5rem;
-    padding: 1.75rem 2rem;
-    color: rgba(227, 238, 255, 0.92);
-}
-
-.confirm-modal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.confirm-modal-header h3 {
-    margin: 0;
-    font-size: 1.1rem;
-    letter-spacing: 0.02em;
-    color: #eaf4ff;
-}
-
-.confirm-modal-close {
-    background: none;
-    border: none;
-    color: rgba(227, 238, 255, 0.65);
-    font-size: 1.6rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: var(--transition);
-    padding: 0.1rem 0.4rem;
-}
-
-.confirm-modal-close:hover,
-.confirm-modal-close:focus {
-    color: #ffffff;
-}
-
-.confirm-modal-body {
-    font-size: 0.95rem;
-    line-height: 1.6;
-    color: rgba(214, 224, 239, 0.9);
-}
-
-.confirm-modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.75rem;
-}
-
-.confirm-modal .button {
-    min-width: 120px;
-}
-
-.confirm-modal .button.danger {
-    background: linear-gradient(140deg, rgba(255, 102, 168, 0.88), rgba(181, 32, 84, 0.92));
-    border-color: rgba(255, 120, 180, 0.65);
-}
-
-.confirm-modal .button.danger:hover {
-    background: linear-gradient(140deg, rgba(255, 120, 180, 0.95), rgba(206, 48, 102, 0.94));
-}
-
-.confirm-modal .button.secondary {
-    background: linear-gradient(140deg, rgba(12, 18, 30, 0.92), rgba(24, 36, 50, 0.9));
-    border-color: rgba(120, 158, 198, 0.28);
-}
-
-.confirm-modal .button.secondary:hover {
-    border-color: rgba(176, 210, 240, 0.45);
-}

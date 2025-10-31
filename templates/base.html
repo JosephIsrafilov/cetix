@@ -96,6 +96,21 @@
             </p>
         </div>
     </footer>
+    <div id="confirm-modal" class="confirm-modal hidden" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+        <div class="confirm-modal-panel">
+            <header class="confirm-modal-header">
+                <h3 id="confirm-modal-title">Confirm action</h3>
+                <button type="button" class="confirm-modal-close" aria-label="Close dialog">&times;</button>
+            </header>
+            <div class="confirm-modal-body">
+                <p id="confirm-modal-message">Are you sure?</p>
+            </div>
+            <div class="confirm-modal-actions">
+                <button type="button" class="button danger confirm-modal-confirm">Delete</button>
+                <button type="button" class="button secondary confirm-modal-cancel">Cancel</button>
+            </div>
+        </div>
+    </div>
     <script src="{% static 'js/password-toggle.js' %}"></script>
     <script src="{% static 'js/form-enhancements.js' %}"></script>
     <script src="{% static 'js/comments.js' %}"></script>

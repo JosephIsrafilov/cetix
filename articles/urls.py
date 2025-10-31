@@ -15,6 +15,7 @@ from .views import (
     PendingArticleListView,
     PopularArticleListView,
     ArticleCommentCreateView,
+    ArticleCommentDeleteView,
     ToggleBookmarkView,
     ToggleReactionView,
 )
@@ -49,5 +50,6 @@ urlpatterns = [
         name="toggle_reaction",
     ),
     path("<slug:slug>/comment/", ArticleCommentCreateView.as_view(), name="comment_create"),
+    path("<slug:slug>/comment/<int:pk>/delete/", ArticleCommentDeleteView.as_view(), name="comment_delete"),
     path("<slug:slug>/", ArticleDetailView.as_view(), name="article_detail"),
 ]

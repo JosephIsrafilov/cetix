@@ -98,10 +98,33 @@
                         <div class="comment-body">{{ comment.body|linebreaks }}</div>
                         <footer class="comment-footer">
                             <div class="comment-actions">
-                                <button type="button" class="comment-vote" data-direction="up" title="Upvote">&uarr;</button>
-                                <button type="button" class="comment-vote" data-direction="down" title="Downvote">&darr;</button>
+                                <button type="button" class="comment-pill-button is-icon comment-vote" data-direction="up" title="Upvote">
+                                    <span class="icon" aria-hidden="true">↑</span>
+                                    <span class="visually-hidden">Upvote</span>
+                                </button>
+                                <button type="button" class="comment-pill-button is-icon comment-vote" data-direction="down" title="Downvote">
+                                    <span class="icon" aria-hidden="true">↓</span>
+                                    <span class="visually-hidden">Downvote</span>
+                                </button>
                                 {% if user.is_authenticated %}
-                                    <button type="button" class="comment-reply-button" data-target="reply-form-{{ comment.id }}">Reply</button>
+                                    <button type="button" class="comment-pill-button comment-reply-button" data-target="reply-form-{{ comment.id }}">
+                                        <span class="icon" aria-hidden="true">↩</span>
+                                        <span class="label">Reply</span>
+                                    </button>
+                                {% endif %}
+                                {% if comment.can_delete_user %}
+                                    <form method="post" class="comment-delete-form" data-confirm="Delete this comment?" action="{% url 'articles:comment_delete' article.slug comment.id %}">
+                                        {% csrf_token %}
+                                        <button type="submit" class="comment-pill-button is-icon comment-delete-button" title="Delete comment" aria-label="Delete comment">
+                                            <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                                                <path d="M9 10.5v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                                <path d="M15 10.5v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                                <path d="M5.5 7.5h13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                                <path d="M10.5 4.5h3a1 1 0 0 1 .98.79l.22 1.21H8.3l.22-1.21A1 1 0 0 1 9.5 4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                                <path d="M17.25 7.5v9.4c0 .88-.68 1.6-1.52 1.6H8.27c-.84 0-1.52-.72-1.52-1.6V7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
+                                        </button>
+                                    </form>
                                 {% endif %}
                             </div>
                         </footer>
@@ -113,7 +136,7 @@
                                 <button type="submit" class="button secondary">Post reply</button>
                             </form>
                         {% endif %}
-                        {% with replies=comment.replies.all %}
+                        {% with replies=comment.cached_replies %}
                             {% if replies %}
                                 <ul class="comment-children">
                                     {% for reply in replies %}
@@ -125,6 +148,24 @@
                                                     <span class="comment-time">{{ reply.created_at|naturaltime }}</span>
                                                 </header>
                                                 <div class="comment-body">{{ reply.body|linebreaks }}</div>
+                                                <footer class="comment-footer">
+                                                    <div class="comment-actions">
+                                                        {% if reply.can_delete_user %}
+                                                            <form method="post" class="comment-delete-form" data-confirm="Delete this comment?" action="{% url 'articles:comment_delete' article.slug reply.id %}">
+                                                                {% csrf_token %}
+                                                                <button type="submit" class="comment-pill-button is-icon comment-delete-button" title="Delete comment" aria-label="Delete comment">
+                                                                    <svg class="icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+                                                                        <path d="M9 10.5v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                                                        <path d="M15 10.5v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                                                        <path d="M5.5 7.5h13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                                                                        <path d="M10.5 4.5h3a1 1 0 0 1 .98.79l.22 1.21H8.3l.22-1.21A1 1 0 0 1 9.5 4.5Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                        <path d="M17.25 7.5v9.4c0 .88-.68 1.6-1.52 1.6H8.27c-.84 0-1.52-.72-1.52-1.6V7.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                    </svg>
+                                                                </button>
+                                                            </form>
+                                                        {% endif %}
+                                                    </div>
+                                                </footer>
                                             </div>
                                         </li>
                                     {% endfor %}

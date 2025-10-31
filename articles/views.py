@@ -185,6 +185,12 @@ class ArticleDetailView(DetailView):
             .select_related("user")
             .prefetch_related("replies__user")
         )
+        for comment in top_level_comments:
+            comment.can_delete_user = comment.can_delete(user)
+            replies = list(comment.replies.all())
+            comment.cached_replies = replies
+            for reply in replies:
+                reply.can_delete_user = reply.can_delete(user)
 
         context.update(
             {
@@ -700,3 +706,14 @@ class ArticleCommentCreateView(LoginRequiredMixin, View):
         else:
             redirect_url = f"{article.get_absolute_url()}#comments"
         return HttpResponseRedirect(redirect_url)
+
+
+class ArticleCommentDeleteView(LoginRequiredMixin, View):
+    def post(self, request, slug, pk):
+        article = get_object_or_404(Article, slug=slug)
+        comment = get_object_or_404(ArticleComment, pk=pk, article=article)
+        if not comment.can_delete(request.user):
+            raise Http404("Comment not found.")
+        comment.delete()
+        messages.info(request, "Comment deleted.")
+        return HttpResponseRedirect(f"{article.get_absolute_url()}#comments")

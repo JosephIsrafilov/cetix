@@ -225,5 +225,9 @@ class ArticleComment(models.Model):
     def __str__(self) -> str:
         return f"{self.user} on {self.article}: {self.body[:40]}"
 
-
-
+    def can_delete(self, user) -> bool:
+        if not user or not getattr(user, "is_authenticated", False):
+            return False
+        if getattr(user, "is_super_admin", False) or getattr(user, "is_admin", False):
+            return True
+        return self.user_id == getattr(user, "id", None)
